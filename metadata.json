@@ -1,0 +1,6 @@
+{
+  "name": "ÉquiProgression",
+  "description": "Application PWA 100% locale d'apprentissage, de pratique équestre et de révisions basée sur les principes fondamentaux de l'équitation classique.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

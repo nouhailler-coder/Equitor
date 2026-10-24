@@ -1,0 +1,58 @@
+import type { Pathway } from '../types';
+
+export const PATHWAYS_CATALOG: Pathway[] = [
+  {
+    id: 'pathway-a',
+    code: 'A',
+    titleFr: 'Découvrir l’équitation',
+    subtitleFr: 'Bases fondamentales & Premiers pas',
+    descriptionFr: 'Pour les cavaliers débutants ou en reprise : environnement équestre, sécurité en carrière, soins à pied, assiette initiale, première prise de contact et vocabulaire indispensable.',
+    targetAudience: 'Débutant à Galop 2 / Découverte',
+    lessonIds: [
+      'fiche-01-regles-manege',
+      'fiche-02-mener-en-main',
+      'fiche-03-monter-descendre',
+      'fiche-04-position-profil',
+      'fiche-06-trot-enleve-assis',
+      'fiche-10-aides-naturelles',
+      'fiche-11-tenue-des-renes',
+    ],
+  },
+  {
+    id: 'pathway-b',
+    code: 'B',
+    titleFr: 'Consolider ses acquis',
+    subtitleFr: 'Équilibre, aides & premières allures vives',
+    descriptionFr: 'Pour affiner son assiette, éliminer les défauts récurrents, maîtriser le galop, comprendre les transitions harmonieuses, le demi-arrêt et la gymnastique sur barres au sol.',
+    targetAudience: 'Intermédiaire / Galop 3 à 5',
+    lessonIds: [
+      'fiche-05-defauts-position',
+      'fiche-07-longe-cavalier',
+      'fiche-08-decouverte-galop',
+      'fiche-09-barres-au-sol',
+      'fiche-12-demi-arret-mecanique',
+      'fiche-13-transitions-harmonieuses',
+      'fiche-14-figures-de-manege',
+      'fiche-20-echauffement-recuperation',
+    ],
+  },
+  {
+    id: 'pathway-c',
+    code: 'C',
+    titleFr: 'Approfondir sa compréhension technique',
+    subtitleFr: 'Doctrine classique, obstacle & perfectionnement',
+    descriptionFr: 'Étude théorique poussée : échelles de progression du dressage, travail latéral, mécanique du saut et du cross, résolution des défenses et éducation du jeune cheval.',
+    targetAudience: 'Avancé / Galop 5 à 7 / Enseignants stagiaires',
+    lessonIds: [
+      'fiche-15-mecanique-allures',
+      'fiche-16-variations-allures',
+      'fiche-18-technique-longe-cheval',
+      'fiche-19-echelles-progression',
+      'fiche-21-mouvements-lateraux',
+      'fiche-22-phases-du-saut',
+      'fiche-23-resoudre-problemes-obstacle',
+      'fiche-24-fondamentaux-cross',
+      'fiche-17-etapes-debourrage',
+    ],
+  },
+];

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#162e24"/>
+      <stop offset="100%" stop-color="#0f1d17"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <!-- Background with rounded squircle safe zone -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <!-- Decorative border -->
+  <rect x="24" y="24" width="464" height="464" rx="90" fill="none" stroke="url(#gold)" stroke-width="4" stroke-opacity="0.35"/>
+  <!-- Horseshoe & Horse Silhouette -->
+  <g transform="translate(256, 256)">
+    <!-- Horseshoe arch -->
+    <path d="M-130,-50 C-130,-140 -70,-190 0,-190 C70,-190 130,-140 130,-50 C130,40 100,120 70,160 L40,140 C65,105 90,35 90,-45 C90,-115 50,-155 0,-155 C-50,-155 -90,-115 -90,-45 C-90,35 -65,105 -40,140 L-70,160 C-100,120 -130,40 -130,-50 Z" fill="url(#gold)" opacity="0.25"/>
+    <!-- Stylized Horse head in center -->
+    <path d="M-40,-120 C-20,-135 15,-130 35,-105 C45,-90 40,-70 55,-55 C70,-40 95,-35 105,-15 C115,5 95,25 75,30 C60,35 50,45 45,65 C40,90 20,115 -10,125 C-35,133 -65,120 -80,95 C-95,70 -95,30 -80,-10 C-70,-35 -55,-65 -50,-95 Z" fill="url(#gold)"/>
+    <!-- Horse Mane & Details -->
+    <path d="M-15,-110 C0,-95 -10,-70 5,-50 C15,-35 2,-20 15,0 C5,15 -15,10 -30,25 C-45,-10 -35,-60 -25,-90 Z" fill="#ffffff" opacity="0.3"/>
+    <!-- Eye star -->
+    <circle cx="30" cy="-45" r="7" fill="#162e24"/>
+    <circle cx="32" cy="-47" r="2.5" fill="#fef08a"/>
+    <!-- Star below -->
+    <path d="M0,80 L5,95 L20,95 L8,105 L12,120 L0,110 L-12,120 L-8,105 L-20,95 L-5,95 Z" fill="url(#gold)"/>
+  </g>
+</svg>
