@@ -1,20 +1,36 @@
 import React from 'react';
 import { PWAInstallButton } from './PWAInstallButton';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { useAppUpdate } from '../../hooks/useAppUpdate';
 
 interface HeaderProps {
+  onOpenMenu: () => void;
   onOpenSearch: () => void;
   onOpenOfflineGuide: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenOfflineGuide }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpenOfflineGuide }) => {
   const isOnline = useOnlineStatus();
+  const { status: updateStatus } = useAppUpdate();
 
   return (
     <header className="sticky top-0 z-40 bg-[#162e24] text-stone-100 border-b border-emerald-900/60 shadow-md">
       <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
-        {/* Brand identity */}
+        {/* Hamburger + Brand identity */}
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={onOpenMenu}
+            className="relative -ml-1.5 p-2 rounded-lg text-emerald-100 hover:bg-emerald-900 transition"
+            title="Menu"
+            aria-label="Ouvrir le menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            {updateStatus === 'ready' && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#162e24]" />
+            )}
+          </button>
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-inner text-[#162e24] font-black text-lg">
             🐎
           </div>

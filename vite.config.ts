@@ -1,16 +1,48 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { readFileSync } from 'fs';
+import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+
+const APP_VERSION: string = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')).version;
+const BUILD_DATE = new Date().toISOString();
+
+/**
+ * Publie `version.json` (version + date de sortie) à la racine du site.
+ * Ce fichier n'est jamais pré-mis en cache : il sert à détecter les nouvelles versions.
+ */
+const versionManifest = (): Plugin => {
+  const body = () => JSON.stringify({ version: APP_VERSION, buildDate: BUILD_DATE }, null, 2);
+  return {
+    name: 'equi-version-manifest',
+    configureServer(server) {
+      server.middlewares.use('/version.json', (_req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store');
+        res.end(body());
+      });
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'version.json', source: body() });
+    },
+  };
+};
 
 export default defineConfig(() => {
   return {
+    define: {
+      __APP_VERSION__: JSON.stringify(APP_VERSION),
+      __BUILD_DATE__: JSON.stringify(BUILD_DATE),
+    },
     plugins: [
       react(),
       tailwindcss(),
+      versionManifest(),
       VitePWA({
-        registerType: 'autoUpdate',
+        // 'prompt' : le nouveau Service Worker attend ; src/pwa/updateManager.ts
+        // décide quand l'appliquer (automatiquement à un moment sûr, ou à la demande).
+        registerType: 'prompt',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
           id: '/',
@@ -45,6 +77,8 @@ export default defineConfig(() => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,json,md}'],
+          globIgnores: ['**/version.json'],
+          clientsClaim: true,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

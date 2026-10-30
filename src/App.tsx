@@ -13,6 +13,12 @@ import { QuizView } from './features/quiz/QuizView';
 import { ProfileView } from './features/profile/ProfileView';
 import { NewSessionModal } from './features/practice/NewSessionModal';
 import { OfflineGuideModal } from './features/profile/OfflineGuideModal';
+import { HamburgerMenu, type MenuAction } from './components/layout/HamburgerMenu';
+import { ChecklistsModal } from './features/practice/ChecklistsModal';
+import { HorseManagerModal } from './features/practice/HorseManagerModal';
+import { BackupModal } from './features/profile/BackupModal';
+import { LegalEthicsModal } from './features/profile/LegalEthicsModal';
+import { SystemSettingsModal } from './features/settings/SystemSettingsModal';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('accueil');
@@ -23,6 +29,17 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNewSessionOpen, setIsNewSessionOpen] = useState(false);
   const [isOfflineGuideOpen, setIsOfflineGuideOpen] = useState(false);
+
+  // Hamburger menu & modals reachable from it
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isChecklistsOpen, setIsChecklistsOpen] = useState(false);
+  const [isHorsesOpen, setIsHorsesOpen] = useState(false);
+  const [isBackupOpen, setIsBackupOpen] = useState(false);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isSystemSettingsOpen, setIsSystemSettingsOpen] = useState(false);
+  // Bumped when data changes from a global modal so the current view reloads it
+  const [dataVersion, setDataVersion] = useState(0);
+  const refreshData = () => setDataVersion((v) => v + 1);
 
   // Quiz filters from lesson or chapter
   const [quizLessonFilter, setQuizLessonFilter] = useState<string | null>(null);
@@ -40,6 +57,34 @@ export default function App() {
     setCurrentTab('reviser');
   };
 
+  const selectTab = (tab: TabType) => {
+    // Clear targeted quiz filters when switching to quiz directly
+    if (tab === 'reviser') {
+      setQuizLessonFilter(null);
+      setQuizChapterFilter(null);
+    }
+    setCurrentTab(tab);
+  };
+
+  const handleMenuAction = (action: MenuAction) => {
+    setIsMenuOpen(false);
+    if (action.type === 'tab') {
+      selectTab(action.tab);
+      return;
+    }
+    const openers = {
+      search: setIsSearchOpen,
+      newSession: setIsNewSessionOpen,
+      checklists: setIsChecklistsOpen,
+      horses: setIsHorsesOpen,
+      backup: setIsBackupOpen,
+      offlineGuide: setIsOfflineGuideOpen,
+      legal: setIsLegalOpen,
+      systemSettings: setIsSystemSettingsOpen,
+    };
+    openers[action.modal](true);
+  };
+
   return (
     <div className="min-h-screen bg-stone-100/70 text-stone-900 flex flex-col font-sans selection:bg-amber-200">
       {/* Discreet Offline Connectivity Banner */}
@@ -47,12 +92,13 @@ export default function App() {
 
       {/* Main Persistent Header */}
       <Header
+        onOpenMenu={() => setIsMenuOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenOfflineGuide={() => setIsOfflineGuideOpen(true)}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6">
+      <main key={dataVersion} className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6">
         {currentTab === 'accueil' && (
           <HomeView
             onSelectLesson={setSelectedLesson}
@@ -86,14 +132,14 @@ export default function App() {
       {/* Bottom Persistent Navigation */}
       <Navigation
         currentTab={currentTab}
-        onSelectTab={(tab) => {
-          // Clear targeted quiz filters when switching to quiz directly from bottom bar
-          if (tab === 'reviser') {
-            setQuizLessonFilter(null);
-            setQuizChapterFilter(null);
-          }
-          setCurrentTab(tab);
-        }}
+        onSelectTab={selectTab}
+      />
+
+      <HamburgerMenu
+        isOpen={isMenuOpen}
+        currentTab={currentTab}
+        onClose={() => setIsMenuOpen(false)}
+        onAction={handleMenuAction}
       />
 
       {/* Global Modals */}
@@ -120,11 +166,39 @@ export default function App() {
       <NewSessionModal
         isOpen={isNewSessionOpen}
         onClose={() => setIsNewSessionOpen(false)}
+        onSessionSaved={refreshData}
       />
 
       <OfflineGuideModal
         isOpen={isOfflineGuideOpen}
         onClose={() => setIsOfflineGuideOpen(false)}
+      />
+
+      <ChecklistsModal
+        isOpen={isChecklistsOpen}
+        onClose={() => setIsChecklistsOpen(false)}
+      />
+
+      <HorseManagerModal
+        isOpen={isHorsesOpen}
+        onClose={() => setIsHorsesOpen(false)}
+        onHorsesUpdated={refreshData}
+      />
+
+      <BackupModal
+        isOpen={isBackupOpen}
+        onClose={() => setIsBackupOpen(false)}
+        onDataChanged={refreshData}
+      />
+
+      <LegalEthicsModal
+        isOpen={isLegalOpen}
+        onClose={() => setIsLegalOpen(false)}
+      />
+
+      <SystemSettingsModal
+        isOpen={isSystemSettingsOpen}
+        onClose={() => setIsSystemSettingsOpen(false)}
       />
     </div>
   );

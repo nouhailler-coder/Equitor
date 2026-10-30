@@ -54,6 +54,11 @@ Elle s’appuie sur les principes fondamentaux de l’équitation classique, de 
 - Restauration avec contrôle de schéma, validation des versions et aperçu avant import (avec option de fusion ou d'écrasement).
 - Effacement sécurisé des données locales à la demande.
 
+### 6. Menu & Paramètres système
+- **Menu hamburger (☰)** regroupant toutes les fonctionnalités par catégorie : Général, Apprendre, Pratiquer à l’écurie, Réviser, Suivi & données, Aide & informations, Système.
+- **Paramètres système** : version installée, date de sortie, date de la dernière vérification, boutons « Vérifier les mises à jour » et « Forcer la mise à jour ».
+- **Mises à jour automatiques en arrière-plan** : vérification régulière, téléchargement silencieux et installation au moment opportun (désactivable).
+
 ---
 
 ## 🛠️ Commandes Utiles
