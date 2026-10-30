@@ -1,7 +1,7 @@
 {
-  "name": "react-example",
+  "name": "equiprogression",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx src/tests/domain.test.ts"
+    "test": "tsx src/tests/domain.test.ts && npm run check:legal",
+    "check:legal": "tsx scripts/check-legal.ts",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

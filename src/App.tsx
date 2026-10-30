@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Lesson, Chapter } from './types';
 import { Header } from './components/layout/Header';
 import { Navigation, type TabType } from './components/layout/Navigation';
@@ -19,6 +19,11 @@ import { HorseManagerModal } from './features/practice/HorseManagerModal';
 import { BackupModal } from './features/profile/BackupModal';
 import { LegalEthicsModal } from './features/profile/LegalEthicsModal';
 import { SystemSettingsModal } from './features/settings/SystemSettingsModal';
+import { OnboardingModal } from './onboarding/OnboardingModal';
+import { ScreenGuideSheet, hasSeenScreenGuide, markScreenGuideSeen } from './onboarding/ScreenGuideSheet';
+import { LegalNoticeModal } from './legal/LegalNoticeModal';
+import { isLegalNoticeAcknowledged } from './legal/legalStorage';
+import { InstallGuideModal } from './components/common/InstallGuideModal';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('accueil');
@@ -37,6 +42,22 @@ export default function App() {
   const [isBackupOpen, setIsBackupOpen] = useState(false);
   const [isLegalOpen, setIsLegalOpen] = useState(false);
   const [isSystemSettingsOpen, setIsSystemSettingsOpen] = useState(false);
+  const [isLegalNoticeOpen, setIsLegalNoticeOpen] = useState(false);
+  const [isInstallGuideOpen, setIsInstallGuideOpen] = useState(false);
+
+  // First-launch onboarding (non-strict: an older acknowledged version is enough)
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => !isLegalNoticeAcknowledged());
+  // Contextual screen guide (auto-shown on first visit of each tab)
+  const [guideTab, setGuideTab] = useState<TabType | null>(null);
+
+  useEffect(() => {
+    if (!isOnboardingOpen && !hasSeenScreenGuide(currentTab)) setGuideTab(currentTab);
+  }, [currentTab, isOnboardingOpen]);
+
+  const closeGuide = () => {
+    if (guideTab) markScreenGuideSeen(guideTab);
+    setGuideTab(null);
+  };
   // Bumped when data changes from a global modal so the current view reloads it
   const [dataVersion, setDataVersion] = useState(0);
   const refreshData = () => setDataVersion((v) => v + 1);
@@ -81,6 +102,10 @@ export default function App() {
       offlineGuide: setIsOfflineGuideOpen,
       legal: setIsLegalOpen,
       systemSettings: setIsSystemSettingsOpen,
+      legalNotice: setIsLegalNoticeOpen,
+      install: setIsInstallGuideOpen,
+      onboarding: setIsOnboardingOpen,
+      help: () => setGuideTab(currentTab),
     };
     openers[action.modal](true);
   };
@@ -94,6 +119,7 @@ export default function App() {
       <Header
         onOpenMenu={() => setIsMenuOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenHelp={() => setGuideTab(currentTab)}
         onOpenOfflineGuide={() => setIsOfflineGuideOpen(true)}
       />
 
@@ -199,6 +225,24 @@ export default function App() {
       <SystemSettingsModal
         isOpen={isSystemSettingsOpen}
         onClose={() => setIsSystemSettingsOpen(false)}
+        onOpenLegalNotice={() => setIsLegalNoticeOpen(true)}
+      />
+
+      <LegalNoticeModal
+        isOpen={isLegalNoticeOpen}
+        onClose={() => setIsLegalNoticeOpen(false)}
+      />
+
+      <InstallGuideModal
+        isOpen={isInstallGuideOpen}
+        onClose={() => setIsInstallGuideOpen(false)}
+      />
+
+      <ScreenGuideSheet tab={guideTab} onClose={closeGuide} />
+
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        onComplete={() => setIsOnboardingOpen(false)}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { InfoTip } from '../../components/common/InfoTip';
 import type { Lesson, Chapter, RidingSession, UserProgress } from '../../types';
 import { CHAPTERS_CATALOG } from '../../data/chapters';
 import { LESSONS_CATALOG } from '../../data/lessons';
@@ -173,6 +174,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <h3 className="font-black text-base sm:text-lg text-stone-900 tracking-tight flex items-center gap-2">
             <span>🗺️</span>
             <span>Parcours Pédagogiques Recommandés</span>
+            <InfoTip label="Parcours" text="Trois parcours de lecture : A pour découvrir les bases, B pour consolider, C pour approfondir. Touchez une étape pour ouvrir le chapitre correspondant." />
           </h3>
           <button
             onClick={() => onNavigateTab('apprendre')}
@@ -225,6 +227,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <h3 className="font-black text-base text-stone-900 tracking-tight flex items-center gap-1.5">
               <span>⭐</span>
               <span>Vos Fiches Favorites</span>
+              <InfoTip label="Favoris" text="Ajoutez une fiche à vos favoris avec l’étoile ⭐ dans la fiche : elle apparaît ici pour y revenir en un geste." />
             </h3>
             <button
               onClick={() => onNavigateTab('suivi')}

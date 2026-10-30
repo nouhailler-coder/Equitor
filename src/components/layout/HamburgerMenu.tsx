@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import {
   BookOpen,
+  CircleHelp,
+  FileText,
+  PlayCircle,
   ClipboardCheck,
   Download,
   GraduationCap,
@@ -31,6 +34,10 @@ export type MenuAction =
         | 'backup'
         | 'offlineGuide'
         | 'legal'
+        | 'legalNotice'
+        | 'help'
+        | 'onboarding'
+        | 'install'
         | 'systemSettings';
     };
 
@@ -56,7 +63,7 @@ interface HamburgerMenuProps {
 const iconClass = 'w-4.5 h-4.5 shrink-0';
 
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab, onClose, onAction }) => {
-  const { isInstallable, install } = usePWAInstall();
+  const { isInstalled } = usePWAInstall();
   const update = useAppUpdate();
 
   useEffect(() => {
@@ -105,8 +112,14 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
     {
       title: 'Aide & informations',
       items: [
-        { label: 'Hors ligne & installation', icon: <WifiOff className={iconClass} />, action: { type: 'modal', modal: 'offlineGuide' } },
-        { label: 'Mentions légales & éthique', icon: <Scale className={iconClass} />, action: { type: 'modal', modal: 'legal' } },
+        { label: 'Aide sur cet écran', icon: <CircleHelp className={iconClass} />, action: { type: 'modal', modal: 'help' } },
+        { label: 'Revoir l’introduction', icon: <PlayCircle className={iconClass} />, action: { type: 'modal', modal: 'onboarding' } },
+        ...(isInstalled
+          ? []
+          : [{ label: 'Installer l’application', icon: <Download className={iconClass} />, action: { type: 'modal', modal: 'install' } as MenuAction }]),
+        { label: 'Mode hors ligne', icon: <WifiOff className={iconClass} />, action: { type: 'modal', modal: 'offlineGuide' } },
+        { label: 'Principes & déontologie', icon: <Scale className={iconClass} />, action: { type: 'modal', modal: 'legal' } },
+        { label: 'Mentions légales', icon: <FileText className={iconClass} />, action: { type: 'modal', modal: 'legalNotice' } },
       ],
     },
     {
@@ -187,20 +200,6 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
                     </li>
                   );
                 })}
-                {cat.title === 'Système' && isInstallable && (
-                  <li>
-                    <button
-                      onClick={async () => {
-                        onClose();
-                        await install();
-                      }}
-                      className="w-full flex items-center gap-3 px-2 py-2.5 rounded-lg text-sm text-left text-stone-200 hover:bg-emerald-900/50 transition"
-                    >
-                      <Download className={iconClass} />
-                      <span className="flex-1">Installer l’application</span>
-                    </button>
-                  </li>
-                )}
               </ul>
             </div>
           ))}

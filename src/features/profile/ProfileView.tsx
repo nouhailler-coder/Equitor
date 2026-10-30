@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { InfoTip } from '../../components/common/InfoTip';
 import type { Lesson } from '../../types';
 import { db } from '../../db';
 import { LESSONS_CATALOG } from '../../data/lessons';
@@ -69,7 +70,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onSelectLesson }) => {
           </div>
           <div>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-              Mon Espace Cavalier
+              Mon Espace Cavalier{' '}
+              <InfoTip light label="Mon suivi" text="Vos statistiques sont calculées à partir de vos fiches assimilées, séances et quiz. Toutes ces données sont stockées uniquement sur cet appareil." />
             </h2>
             <p className="text-xs text-emerald-200/80">
               Données locales chiffrées par votre navigateur • 0 compte cloud
@@ -144,6 +146,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onSelectLesson }) => {
         <h3 className="font-bold text-base text-stone-900 flex items-center gap-1.5">
           <span>⚙️</span>
           <span>Outils, Sauvegarde &amp; Sécurité</span>
+          <InfoTip label="Sauvegarde" text="Exportez régulièrement une sauvegarde JSON : c’est la seule copie de vos données en dehors de ce navigateur. Elle permet aussi de les transférer sur un autre appareil." />
         </h3>
 
         <div className="space-y-2">

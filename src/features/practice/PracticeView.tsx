@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { InfoTip } from '../../components/common/InfoTip';
 import type { RidingSession, Horse } from '../../types';
 import { db } from '../../db';
 import { ChecklistsModal } from './ChecklistsModal';
@@ -54,7 +55,8 @@ export const PracticeView: React.FC = () => {
           <span>100% Hors Ligne</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-          Pratique, Checklists &amp; Journal
+          Pratique, Checklists &amp; Journal{' '}
+          <InfoTip light label="Pratique" text="Avant de monter : cochez les checklists. Après la séance : enregistrez-la dans le journal. Les fiches chevaux permettent d’associer chaque séance au bon cheval." />
         </h2>
         <p className="text-xs sm:text-sm text-emerald-100/80 mt-1 max-w-lg leading-relaxed">
           Outil tactile conçu pour l'écurie : vérifiez votre matériel, organisez vos objectifs avant de monter et enregistrez vos ressentis à pied après la séance.
@@ -115,6 +117,7 @@ export const PracticeView: React.FC = () => {
           <h3 className="text-base sm:text-lg font-black text-stone-900 tracking-tight flex items-center gap-2">
             <span>📖</span>
             <span>Journal de bord des séances ({sessions.length})</span>
+            <InfoTip label="Journal" text="Chaque séance enregistrée apparaît ici, de la plus récente à la plus ancienne. Touchez-en une pour voir le détail, la modifier ou la supprimer. Le filtre limite l’affichage à un cheval." />
           </h3>
           <p className="text-xs text-stone-500">
             Historique privé stocké exclusivement sur votre téléphone

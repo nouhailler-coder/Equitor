@@ -26,3 +26,10 @@ Le stockage persistant utilise IndexedDB avec les tables suivantes :
 - **Installation automatique** : si l'option « Mises à jour automatiques » est active (par défaut), la version en attente est appliquée au lancement de l'application ou lorsqu'elle passe en arrière-plan, pour ne jamais interrompre une saisie.
 - **Paramètres système** (menu ☰ → Système) : version, date de sortie, date de dernière vérification, boutons « Vérifier les mises à jour » et « Forcer la mise à jour » (désinscription du Service Worker + vidage du Cache Storage, sans toucher aux données IndexedDB).
 - Seule la ressource statique `version.json` est interrogée : aucune donnée personnelle n'est transmise.
+
+## 5. Onboarding, aide contextuelle & mentions légales
+- **Premier lancement** : `OnboardingModal` (bienvenue → fonctionnement → installation → avertissement légal). L'acceptation est stockée dans `localStorage` (`legal_notice_acknowledged`, `legal_notice_acknowledged_version`) ; aucune donnée personnelle n'est enregistrée.
+- **Mentions légales** : contenu unique dans `src/legal/legalContent.ts`, rendu par `LegalSections` dans l'onboarding et dans l'écran permanent (menu ☰ → Aide & informations, ou Paramètres système).
+- **Aide contextuelle** : un guide par onglet (`src/onboarding/screenGuides.ts`), affiché à la première visite puis via le bouton « ? » ; infobulles `InfoTip` sur les sections clés.
+- **Installation** : capture partagée de `beforeinstallprompt` (`usePWAInstall`) et guide par plateforme (`InstallGuideModal`).
+- **Vérification** : `npm run check:legal` contrôle qu'aucune section légale n'est vide, que la section localisation n'existe que si l'application lit la position, et que chaque onglet a son guide.

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { InfoTip } from '../../components/common/InfoTip';
 import type { QuizQuestion, QuizAttempt, SkillLevel } from '../../types';
 import { QUIZZES_CATALOG } from '../../data/quizzes';
 import { GLOSSARY_CATALOG } from '../../data/glossary';
@@ -118,7 +119,8 @@ export const QuizView: React.FC<QuizViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
-            Révisions &amp; Moteur de Quiz
+            Révisions &amp; Moteur de Quiz{' '}
+            <InfoTip label="Quiz" text="Choisissez un mode (quiz ou flashcards) et un périmètre (tout, un chapitre ou une fiche). Après chaque réponse, une explication vous aide à comprendre. Vos résultats restent sur l’appareil." />
           </h2>
           <p className="text-xs text-stone-500">
             Évaluation formative 100% locale avec explications pédagogiques détaillées

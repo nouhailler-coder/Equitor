@@ -6,10 +6,11 @@ import { useAppUpdate } from '../../hooks/useAppUpdate';
 interface HeaderProps {
   onOpenMenu: () => void;
   onOpenSearch: () => void;
+  onOpenHelp: () => void;
   onOpenOfflineGuide: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpenOfflineGuide }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpenHelp, onOpenOfflineGuide }) => {
   const isOnline = useOnlineStatus();
   const { status: updateStatus } = useAppUpdate();
 
@@ -31,14 +32,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpen
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#162e24]" />
             )}
           </button>
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-inner text-[#162e24] font-black text-lg">
-            🐎
-          </div>
+          <img src="/logo.svg" alt="" className="w-8 h-8 rounded-lg shadow" />
           <div>
             <h1 className="text-base sm:text-lg font-black tracking-tight leading-none text-white">
               Équi<span className="text-amber-400">Progression</span>
             </h1>
-            <p className="text-[10px] text-emerald-200/70 font-medium tracking-wide">
+            <p className="hidden sm:block text-[10px] text-emerald-200/70 font-medium tracking-wide">
               Équitation Classique • 100% Locale
             </p>
           </div>
@@ -49,10 +48,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpen
           {/* Offline status indicator button */}
           <button
             onClick={onOpenOfflineGuide}
-            className={`flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition ${
+            className={`items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition ${
               isOnline
-                ? 'bg-emerald-950/70 border-emerald-700/60 text-emerald-300'
-                : 'bg-amber-950/90 border-amber-600 text-amber-300 animate-pulse'
+                ? 'hidden sm:flex bg-emerald-950/70 border-emerald-700/60 text-emerald-300'
+                : 'flex bg-amber-950/90 border-amber-600 text-amber-300 animate-pulse'
             }`}
             title="Cliquez pour voir les informations de fonctionnement hors ligne"
           >
@@ -60,6 +59,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpen
               className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-amber-400'}`}
             />
             <span className="hidden xs:inline">{isOnline ? 'Hors ligne prêt' : 'Hors ligne actif'}</span>
+          </button>
+
+          {/* Contextual help for the current screen */}
+          <button
+            onClick={onOpenHelp}
+            className="w-8 h-8 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 transition border border-emerald-800/60 font-black text-sm"
+            title="Comment fonctionne cet écran ?"
+            aria-label="Aide sur cet écran"
+          >
+            ?
           </button>
 
           {/* Search Button */}

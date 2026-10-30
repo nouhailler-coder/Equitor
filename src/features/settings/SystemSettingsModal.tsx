@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAppUpdate } from '../../hooks/useAppUpdate';
+import { resetLegalNotice } from '../../legal/legalStorage';
+import { resetScreenGuides } from '../../onboarding/ScreenGuideSheet';
 import {
   applyUpdate,
   checkForUpdates,
@@ -11,6 +13,7 @@ import {
 interface SystemSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenLegalNotice: () => void;
 }
 
 const formatDate = (iso: string | null) => {
@@ -37,7 +40,7 @@ const STATUS_LABELS: Record<UpdateStatus, { text: string; tone: string }> = {
   unsupported: { text: 'Mises à jour non prises en charge par ce navigateur', tone: 'bg-stone-100 text-stone-700 border-stone-200' },
 };
 
-export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({ isOpen, onClose }) => {
+export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({ isOpen, onClose, onOpenLegalNotice }) => {
   const update = useAppUpdate();
   const [confirmForce, setConfirmForce] = useState(false);
   const [isForcing, setIsForcing] = useState(false);
@@ -182,6 +185,29 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({ isOpen
               </span>
             </span>
           </label>
+
+          {/* Legal */}
+          <button
+            onClick={onOpenLegalNotice}
+            className="w-full flex items-center justify-between rounded-xl border border-stone-200 p-3 hover:bg-stone-50 transition text-left"
+          >
+            <span className="font-semibold text-stone-900">📄 Mentions légales</span>
+            <span className="text-stone-400" aria-hidden="true">›</span>
+          </button>
+
+          {/* Developer-only reset to replay the first launch */}
+          {import.meta.env.DEV && (
+            <button
+              onClick={() => {
+                resetLegalNotice();
+                resetScreenGuides();
+                window.location.reload();
+              }}
+              className="w-full rounded-xl border border-dashed border-red-300 text-red-700 p-2.5 text-xs font-semibold"
+            >
+              🛠️ [DEV] Réinitialiser les mentions légales et l’onboarding
+            </button>
+          )}
         </div>
 
         <div className="p-4 border-t border-stone-100 bg-stone-50">

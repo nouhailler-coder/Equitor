@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { InfoTip } from '../../components/common/InfoTip';
 import type { Lesson, Chapter, SkillLevel, LessonCategory } from '../../types';
 import { CHAPTERS_CATALOG } from '../../data/chapters';
 import { LESSONS_CATALOG } from '../../data/lessons';
@@ -75,7 +76,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
-            Bibliothèque Pédagogique Équestre
+            Bibliothèque Pédagogique Équestre{' '}
+            <InfoTip label="Bibliothèque" text="Parcourez les 18 modules ou filtrez les fiches par niveau et par thème. Ouvrez une fiche pour la lire, la mettre en favori, la marquer comme assimilée ou lancer un quiz associé." />
           </h2>
           <p className="text-xs text-stone-500">
             18 modules d’apprentissage, fiches techniques illustrées &amp; glossaire thématique

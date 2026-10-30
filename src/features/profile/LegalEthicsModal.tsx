@@ -57,7 +57,7 @@ export const LegalEthicsModal: React.FC<LegalEthicsModalProps> = ({ isOpen, onCl
           </div>
 
           <div className="text-[11px] text-stone-400 border-t pt-3">
-            Version application : 1.0.0 • Architecture : PWA Offline-First • Moteur : React &amp; Dexie IndexedDB
+            Version application : {__APP_VERSION__} • Architecture : PWA Offline-First • Moteur : React &amp; Dexie IndexedDB
           </div>
         </div>
 
