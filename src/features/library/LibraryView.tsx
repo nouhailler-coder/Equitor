@@ -3,7 +3,21 @@ import { InfoTip } from '../../components/common/InfoTip';
 import type { Lesson, Chapter, SkillLevel, LessonCategory } from '../../types';
 import { CHAPTERS_CATALOG } from '../../data/chapters';
 import { LESSONS_CATALOG } from '../../data/lessons';
-import { GLOSSARY_CATALOG } from '../../data/glossary';
+import { DICTIONARY, DICTIONARY_CATEGORIES } from '../../data/dictionary';
+import { Link, card } from '../../components/ui/kit';
+import { LEVEL_LABELS } from '../../data/catalog';
+
+/** Le glossaire de la bibliothèque s'appuie désormais sur le dictionnaire complet. */
+const CATEGORY_LABEL = Object.fromEntries(DICTIONARY_CATEGORIES.map((c) => [c.id, c.label]));
+const GLOSSARY_CATALOG = DICTIONARY.map((d) => ({
+  id: d.id,
+  termFr: d.term,
+  synonymeOuVariante: d.short,
+  category: CATEGORY_LABEL[d.category],
+  definitionFr: d.explanation,
+  exampleFr: d.example,
+  domaineTechnique: `Niveau ${LEVEL_LABELS[d.level].toLowerCase()}`,
+}));
 import { LevelBadge, RiskBadge } from '../../components/common/Badge';
 
 interface LibraryViewProps {
@@ -72,13 +86,24 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
   return (
     <div className="space-y-5 pb-24">
+      <div className="grid grid-cols-2 gap-3">
+        <Link to="apprendre/parcours" className={`${card} p-3 flex items-center gap-2 hover:border-emerald-500`}>
+          <span className="text-2xl" aria-hidden="true">🧭</span>
+          <span className="text-sm font-bold">Mon parcours</span>
+        </Link>
+        <Link to="ressources" className={`${card} p-3 flex items-center gap-2 hover:border-emerald-500`}>
+          <span className="text-2xl" aria-hidden="true">🗂️</span>
+          <span className="text-sm font-bold">Ressources</span>
+        </Link>
+      </div>
+
       {/* Title & Top switch */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
             Bibliothèque Pédagogique Équestre{' '}
             <InfoTip label="Bibliothèque" text="Parcourez les 18 modules ou filtrez les fiches par niveau et par thème. Ouvrez une fiche pour la lire, la mettre en favori, la marquer comme assimilée ou lancer un quiz associé." />
-          </h2>
+          </h1>
           <p className="text-xs text-stone-500">
             18 modules d’apprentissage, fiches techniques illustrées &amp; glossaire thématique
           </p>
@@ -324,12 +349,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <h3 className="font-bold text-base text-stone-900">
-                      {term.termFr}
+                      <Link to={`ressources/dictionnaire/${term.id}`} className="hover:underline">{term.termFr}</Link>
                     </h3>
-                    <span className="text-xs font-medium text-sky-800 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">
-                      {term.synonymeOuVariante}
-                    </span>
                   </div>
+                  <p className="text-xs font-semibold text-sky-800 mb-1.5">{term.synonymeOuVariante}</p>
 
                   <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block mb-2">
                     {term.category}

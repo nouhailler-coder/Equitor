@@ -48,7 +48,7 @@ export default defineConfig(() => {
           id: '/',
           name: 'ÉquiProgression',
           short_name: 'ÉquiProgr',
-          description: 'Application PWA 100% locale d’apprentissage, de pratique équestre et de révisions basée sur le manuel BHS.',
+          description: 'Application PWA 100% locale d’apprentissage, de pratique équestre et de révisions fondée sur les principes de l’équitation classique.',
           theme_color: '#1e3a2f',
           background_color: '#1e3a2f',
           display: 'standalone',

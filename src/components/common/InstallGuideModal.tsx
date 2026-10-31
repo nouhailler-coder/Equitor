@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useEscape } from '../../hooks/useEscape';
 import { createPortal } from 'react-dom';
 import { usePWAInstall, type InstallPlatform } from '../../hooks/usePWAInstall';
 
@@ -95,12 +96,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({ isOpen, on
     if (isOpen) setTab(platform);
   }, [isOpen, platform]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, onClose]);
+  useEscape(!!isOpen, onClose);
 
   if (!isOpen) return null;
 

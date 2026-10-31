@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useEscape } from '../hooks/useEscape';
 import type { TabType } from '../components/layout/Navigation';
 import { SCREEN_GUIDES } from './screenGuides';
 import { useFocusTrap } from '../hooks/useFocusTrap';
@@ -42,12 +43,7 @@ export const ScreenGuideSheet: React.FC<ScreenGuideSheetProps> = ({ tab, onClose
   const ref = useRef<HTMLDivElement>(null);
   useFocusTrap(ref, tab !== null, tab);
 
-  useEffect(() => {
-    if (!tab) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [tab, onClose]);
+  useEscape(!!tab, onClose);
 
   if (!tab) return null;
   const guide = SCREEN_GUIDES[tab];

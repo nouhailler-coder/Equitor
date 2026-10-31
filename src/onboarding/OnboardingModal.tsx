@@ -13,11 +13,12 @@ interface OnboardingModalProps {
 }
 
 const FEATURES = [
-  { icon: '🏠', title: 'Accueil', text: 'Reprenez votre dernière fiche, suivez un parcours et voyez vos statistiques.' },
-  { icon: '📚', title: 'Apprendre', text: '18 modules, des fiches illustrées et un glossaire équestre.' },
-  { icon: '📋', title: 'Pratiquer', text: 'Checklists d’écurie, journal de séances et fiches de vos chevaux.' },
-  { icon: '💡', title: 'Réviser', text: 'Quiz commentés et flashcards pour ancrer les notions.' },
-  { icon: '👤', title: 'Mon suivi', text: 'Progression, favoris et sauvegarde de vos données.' },
+  { icon: '🏠', title: 'Accueil', text: 'Votre prochaine étape, vos révisions du jour et vos accès rapides.' },
+  { icon: '📚', title: 'Apprendre', text: 'Fiches, parcours personnalisé, dictionnaire, atlas, matériel, manège.' },
+  { icon: '🏋️', title: 'Pratiquer', text: 'Exercices interactifs, préparation de séance et checklists.' },
+  { icon: '💡', title: 'Réviser', text: 'Révisions espacées et cartes mémoire, au bon moment.' },
+  { icon: '📈', title: 'Ma progression', text: 'Profil, diagnostic, compétences, statistiques et sauvegarde.' },
+  { icon: '📓', title: 'Mon journal', text: 'Vos séances et les fiches de vos chevaux.' },
 ];
 
 const STEP_COUNT = 4;
@@ -129,7 +130,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
             <div className="space-y-3">
               <h2 id="onboarding-title" className="text-xl font-black text-stone-900">Comment ça marche ?</h2>
               <p className="text-sm text-stone-600">
-                La barre en bas de l’écran donne accès aux 5 espaces ; le menu ☰ en haut à gauche les
+                La barre en bas de l’écran donne accès aux 6 espaces ; le menu ☰ en haut à gauche les
                 regroupe tous, avec l’aide et les paramètres.
               </p>
               <ul className="space-y-2">
@@ -174,7 +175,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
                 <p>
                   🔒 <strong>Vos données restent sur votre appareil</strong> : aucun compte, aucun serveur.
                 </p>
-                <p>💾 Pensez à exporter une sauvegarde de temps en temps (Mon suivi → Sauvegarde).</p>
+                <p>💾 Pensez à exporter une sauvegarde de temps en temps (Ma progression → Mes données).</p>
                 <p>🔄 Les mises à jour s’installent automatiquement en arrière-plan.</p>
               </div>
             </div>

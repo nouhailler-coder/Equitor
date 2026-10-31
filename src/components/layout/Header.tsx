@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpen
 
   return (
     <header className="sticky top-0 z-40 bg-[#162e24] text-stone-100 border-b border-emerald-900/60 shadow-md">
-      <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
         {/* Hamburger + Brand identity */}
         <div className="flex items-center gap-2.5">
           <button
@@ -32,15 +32,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpen
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#162e24]" />
             )}
           </button>
+          <a href="#/accueil" className="flex items-center gap-2.5" aria-label="ÉquiProgression — accueil">
           <img src="/logo.svg" alt="" className="w-8 h-8 rounded-lg shadow" />
           <div>
-            <h1 className="text-base sm:text-lg font-black tracking-tight leading-none text-white">
+            <span className="block text-base sm:text-lg font-black tracking-tight leading-none text-white">
               Équi<span className="text-amber-400">Progression</span>
-            </h1>
+            </span>
             <p className="hidden sm:block text-[10px] text-emerald-200/70 font-medium tracking-wide">
               Équitation Classique • 100% Locale
             </p>
           </div>
+          </a>
         </div>
 
         {/* Action icons */}

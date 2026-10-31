@@ -1,100 +1,102 @@
 import React from 'react';
+import { BookOpen, Dumbbell, GraduationCap, Home, Library, NotebookPen, TrendingUp } from 'lucide-react';
+import { navigate } from '../../app/router';
+import { useLive } from '../../hooks/useLive';
+import { db } from '../../services/storage/db';
 
-export type TabType = 'accueil' | 'apprendre' | 'pratiquer' | 'reviser' | 'suivi';
+/** Espaces de l'application. « ressources » est accessible depuis Apprendre, le menu et la barre latérale. */
+export type TabType = 'accueil' | 'apprendre' | 'pratiquer' | 'reviser' | 'progression' | 'journal' | 'ressources';
 
-interface NavigationProps {
-  currentTab: TabType;
-  onSelectTab: (tab: TabType) => void;
-  reviewCountBadge?: number;
+export const TABS: { id: TabType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: 'accueil', label: 'Accueil', icon: Home },
+  { id: 'apprendre', label: 'Apprendre', icon: BookOpen },
+  { id: 'pratiquer', label: 'Pratiquer', icon: Dumbbell },
+  { id: 'reviser', label: 'Réviser', icon: GraduationCap },
+  { id: 'progression', label: 'Progression', icon: TrendingUp },
+  { id: 'journal', label: 'Journal', icon: NotebookPen },
+];
+
+export const isTab = (s: string): s is TabType => ['accueil', 'apprendre', 'pratiquer', 'reviser', 'progression', 'journal', 'ressources'].includes(s);
+
+/** Nombre de révisions dues aujourd'hui (pastille sur « Réviser »). */
+function useDueCount() {
+  return useLive(
+    async () => {
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+      return db.revisionItems.where('dueAt').belowOrEqual(end.toISOString()).count();
+    },
+    [],
+    0,
+  );
 }
 
-export const Navigation: React.FC<NavigationProps> = ({
-  currentTab,
-  onSelectTab,
-  reviewCountBadge = 0,
-}) => {
-  const tabs: { id: TabType; label: string; icon: React.ReactNode; badge?: number }[] = [
-    {
-      id: 'accueil',
-      label: 'Accueil',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-      ),
-    },
-    {
-      id: 'apprendre',
-      label: 'Apprendre',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      ),
-    },
-    {
-      id: 'pratiquer',
-      label: 'Pratiquer',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-        </svg>
-      ),
-    },
-    {
-      id: 'reviser',
-      label: 'Réviser',
-      badge: reviewCountBadge,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      ),
-    },
-    {
-      id: 'suivi',
-      label: 'Mon suivi',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      ),
-    },
-  ];
-
+/** Barre de navigation inférieure (mobile et tablette). */
+export const BottomNav: React.FC<{ current: TabType }> = ({ current }) => {
+  const due = useDueCount();
+  const active = current === 'ressources' ? 'apprendre' : current;
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 text-stone-400 pb-[env(safe-area-inset-bottom)]">
-      <div className="max-w-md mx-auto grid grid-cols-5 h-16">
-        {tabs.map((tab) => {
-          const isActive = currentTab === tab.id;
+    <nav aria-label="Navigation principale" className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 pb-[env(safe-area-inset-bottom)]">
+      <div className="max-w-lg mx-auto grid grid-cols-6 h-16">
+        {TABS.map((t) => {
+          const isActive = active === t.id;
+          const Icon = t.icon;
           return (
             <button
-              key={tab.id}
-              onClick={() => onSelectTab(tab.id)}
-              className={`flex flex-col items-center justify-center relative py-1 transition-all ${
-                isActive
-                  ? 'text-amber-400 font-bold scale-105'
-                  : 'text-stone-400 hover:text-stone-200 active:scale-95'
-              }`}
+              key={t.id}
+              onClick={() => navigate(t.id)}
+              aria-current={isActive ? 'page' : undefined}
+              className={`relative flex flex-col items-center justify-center gap-0.5 transition ${isActive ? 'text-amber-400' : 'text-stone-400 hover:text-stone-200'}`}
             >
-              <div className="relative">
-                {tab.icon}
-                {tab.badge && tab.badge > 0 ? (
-                  <span className="absolute -top-1 -right-2 bg-amber-500 text-stone-950 font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
-                    {tab.badge}
+              <span className="relative">
+                <Icon className="w-5 h-5" />
+                {t.id === 'reviser' && due > 0 && (
+                  <span className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-amber-500 text-stone-950 text-[9px] font-black flex items-center justify-center">
+                    {due > 99 ? '99+' : due}
                   </span>
-                ) : null}
-              </div>
-              <span className={`text-[11px] mt-1 tracking-tight ${isActive ? 'text-amber-400' : ''}`}>
-                {tab.label}
+                )}
               </span>
-              {isActive && (
-                <span className="absolute bottom-1 w-6 h-0.5 bg-amber-400 rounded-full" />
-              )}
+              <span className={`text-[10px] tracking-tight ${isActive ? 'font-bold' : ''}`}>{t.label}</span>
+              {isActive && <span className="absolute bottom-1 w-6 h-0.5 rounded-full bg-amber-400" />}
             </button>
           );
         })}
       </div>
+    </nav>
+  );
+};
+
+/** Barre latérale (ordinateur). */
+export const SideNav: React.FC<{ current: TabType }> = ({ current }) => {
+  const due = useDueCount();
+  const items = [...TABS, { id: 'ressources' as TabType, label: 'Ressources', icon: Library }];
+  return (
+    <nav aria-label="Navigation principale" className="hidden lg:block w-56 shrink-0 sticky top-14 self-start h-[calc(100dvh-3.5rem)] py-6 pr-4">
+      <ul className="space-y-1">
+        {items.map((t) => {
+          const isActive = current === t.id;
+          const Icon = t.icon;
+          return (
+            <li key={t.id}>
+              <button
+                onClick={() => navigate(t.id)}
+                aria-current={isActive ? 'page' : undefined}
+                className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                  isActive
+                    ? 'bg-brand-900 text-amber-300 dark:bg-emerald-900/60'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/60 dark:hover:bg-stone-800'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.label}</span>
+                {t.id === 'reviser' && due > 0 && (
+                  <span className="rounded-full bg-amber-500 text-stone-950 text-[10px] font-black px-1.5">{due}</span>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 };

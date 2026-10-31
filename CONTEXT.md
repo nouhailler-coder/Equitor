@@ -46,8 +46,20 @@ PWA mobile en français d’apprentissage et de suivi de la pratique équestre. 
 - `PWAInstallButton` : installation native si disponible, sinon `InstallGuideModal` (instructions par plateforme).
 
 ### 🔄 Mises à jour
-- `src/pwa/updateManager.ts` + hook `useAppUpdate`. Détails dans `docs/architecture.md` §4.
+- `src/pwa/updateManager.ts` + hook `useAppUpdate`. Détails dans `docs/STRATEGIE_HORS_LIGNE.md`.
 - Préférences : `equi.update.lastCheck`, `equi.update.auto`.
+
+## 🧱 Version 2 : règles de développement
+
+- **Écritures** : uniquement via `src/services/` (`repos.ts`, `progressService.ts`, `backup.ts`), en transaction quand plusieurs tables sont touchées, enveloppées dans `safeWrite` côté écran (message en cas d'échec).
+- **Lectures** : `useLive(() => db…)` — les écrans se mettent à jour seuls après une écriture.
+- **Logique pure** (maîtrise, révisions, correction, stats, recherche, migrations) : sans IndexedDB, testée dans `src/tests/`.
+- **Contenus** : `src/data/` ; chaque lien entre contenus est vérifié par `content.test.ts` (aucun lien cassé toléré).
+- **Ajouter un exercice** : un objet dans `src/data/exercises.ts` (types dans `models.ts`) ; une question « image » référence une vue de `interactiveViews.ts`.
+- **Modifier le schéma** : nouvelle `version(n)` dans `services/storage/db.ts` + conversion pure dans `migrations.ts` + test d'intégration. Ne jamais supprimer un champ utilisateur.
+- **Routes** : `#/espace/…`, déclarées dans `Screen` (`App.tsx`) ; un nouvel espace exige son guide dans `screenGuides.ts`.
+- **Fenêtres** : `Modal` du kit (piège de focus, `useEscape` : Échap ne ferme que la fenêtre du dessus).
+- **Prudence pédagogique** : contenus avancés = supports de compréhension ; comportement = jamais d'interprétation catégorique ; matériel = pas de réglage personnalisé ; observations ≠ diagnostic vétérinaire.
 
 ## 🧪 Tester le premier lancement
 
@@ -57,7 +69,8 @@ PWA mobile en français d’apprentissage et de suivi de la pratique équestre. 
 ## ✅ Avant de livrer
 
 ```bash
-npm test        # tests métier + check:legal
+npm test          # 69 tests + check:legal
+npm run test:e2e  # 12 parcours de bout en bout
 npm run lint    # TypeScript
 npm run build   # build PWA
 ```

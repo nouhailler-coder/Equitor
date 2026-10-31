@@ -8,64 +8,86 @@ export interface ScreenGuide {
 }
 
 /**
- * Aide contextuelle de chaque écran : affichée automatiquement à la première visite,
- * puis à la demande via le bouton « ? » de l'en-tête. Tout nouvel onglet doit avoir
+ * Aide contextuelle de chaque espace : affichée automatiquement à la première visite,
+ * puis à la demande via le bouton « ? » de l'en-tête. Tout nouvel espace doit avoir
  * son entrée ici (vérifié par scripts/check-legal.ts).
  */
 export const SCREEN_GUIDES: Record<TabType, ScreenGuide> = {
   accueil: {
     icon: '🏠',
     title: 'Accueil',
-    intro: 'Votre tableau de bord : reprenez là où vous vous étiez arrêté et choisissez la suite.',
+    intro: 'Votre tableau de bord : révisions du jour, prochaine étape de votre parcours et accès rapides.',
     tips: [
-      { icon: '▶️', text: '« Reprendre l’apprentissage » rouvre la dernière fiche consultée.' },
-      { icon: '🗺️', text: 'Les parcours A, B et C proposent un ordre de lecture selon votre niveau.' },
-      { icon: '📊', text: 'Les compteurs résument vos fiches assimilées, séances et chevaux enregistrés.' },
-      { icon: '🐎', text: '« Préparer une séance » ouvre directement le formulaire du journal.' },
+      { icon: '🎯', text: '« Prochaine étape » propose les compétences à travailler, d’après votre profil et vos résultats.' },
+      { icon: '🔁', text: 'Le bloc Révisions indique les notions à revoir aujourd’hui.' },
+      { icon: '⭐', text: 'Vos favoris (fiches, termes, exercices…) sont regroupés ici.' },
+      { icon: '📝', text: 'Accès direct au journal et à la préparation de séance.' },
     ],
   },
   apprendre: {
     icon: '📚',
     title: 'Apprendre',
-    intro: 'La bibliothèque pédagogique : modules, fiches techniques illustrées et glossaire.',
+    intro: 'Les fiches pédagogiques, votre parcours personnalisé et l’accès aux ressources.',
     tips: [
-      { icon: '🔎', text: 'Filtrez les fiches par niveau (débutant → avancé) et par thème.' },
-      { icon: '📖', text: 'Touchez un module pour voir ses sous-parties et ses fiches liées.' },
-      { icon: '⭐', text: 'Dans une fiche, l’étoile l’ajoute à vos favoris ; marquez-la « assimilée » quand vous la maîtrisez.' },
-      { icon: '⚠️', text: 'Les fiches à risque élevé rappellent qu’un encadrement qualifié est indispensable.' },
+      { icon: '🧭', text: '« Mon parcours » liste les compétences recommandées et leur état de maîtrise.' },
+      { icon: '🔎', text: 'Filtrez les fiches par niveau et par thème ; les mots soulignés ouvrent leur définition.' },
+      { icon: '⭐', text: 'Dans une fiche : favori, note personnelle, quiz associé et export PDF.' },
+      { icon: '⚠️', text: 'Les fiches avancées sont des supports de compréhension : leur pratique se fait encadrée.' },
     ],
   },
   pratiquer: {
-    icon: '📋',
+    icon: '🏋️',
     title: 'Pratiquer',
-    intro: 'L’écran de l’écurie : préparez-vous avant de monter et notez vos ressentis après.',
+    intro: 'Exercices interactifs, préparation de vos séances et checklists d’écurie.',
     tips: [
-      { icon: '✅', text: 'Les checklists (cavalier, matériel, sécurité, soins) se cochent d’un doigt.' },
-      { icon: '🐴', text: '« Mes chevaux » enregistre les fiches de vos chevaux pour les associer aux séances.' },
-      { icon: '📝', text: '« Nouvelle séance » ajoute une entrée au journal : objectifs, ressenti, réussites, difficultés.' },
-      { icon: '🔽', text: 'Touchez une séance du journal pour la déplier, la modifier ou la supprimer.' },
+      { icon: '🧩', text: 'Dix types d’exercices : QCM, associations, classement, schémas à toucher, textes à trous…' },
+      { icon: '💬', text: 'Après chaque réponse : explication, erreurs fréquentes et ressource pour approfondir.' },
+      { icon: '🗓️', text: 'Préparez une séance à partir d’un modèle, puis faites le bilan après.' },
+      { icon: '✅', text: 'Les checklists sont modifiables et enregistrées sur l’appareil.' },
     ],
   },
   reviser: {
     icon: '💡',
     title: 'Réviser',
-    intro: 'Testez vos connaissances avec des quiz commentés et des flashcards.',
+    intro: 'Répétition espacée : chaque notion revient au bon moment selon vos réussites.',
     tips: [
-      { icon: '🎯', text: 'Choisissez un chapitre ou une fiche pour un quiz ciblé, ou lancez une série générale.' },
-      { icon: '💬', text: 'Chaque réponse est suivie d’une explication pédagogique.' },
-      { icon: '🃏', text: 'Les flashcards se retournent d’un toucher pour réviser le vocabulaire.' },
-      { icon: '📈', text: 'Vos résultats alimentent le taux de réussite visible dans « Mon suivi ».' },
+      { icon: '📅', text: 'Les révisions du jour et en retard sont à faire en priorité.' },
+      { icon: '🃏', text: 'Retournez une carte, puis indiquez si c’était oublié, difficile, bien ou facile.' },
+      { icon: '⏱️', text: 'Intervalles indicatifs : 1, 3, 7, 14 puis 30 jours, raccourcis en cas de difficulté.' },
+      { icon: '🌱', text: '« À découvrir » regroupe les cartes jamais révisées.' },
     ],
   },
-  suivi: {
-    icon: '👤',
-    title: 'Mon suivi',
-    intro: 'Votre espace personnel : progression, favoris et gestion de vos données.',
+  progression: {
+    icon: '📈',
+    title: 'Ma progression',
+    intro: 'Votre profil, le diagnostic, le référentiel de compétences et vos statistiques.',
     tips: [
-      { icon: '📊', text: 'Les statistiques sont calculées localement à partir de votre activité.' },
-      { icon: '💾', text: '« Sauvegarde » exporte toutes vos données dans un fichier JSON à conserver.' },
-      { icon: '♻️', text: 'La restauration réimporte une sauvegarde (fusion ou remplacement) avec un aperçu préalable.' },
-      { icon: '🔒', text: 'Rien ne quitte votre appareil : sans sauvegarde, effacer le navigateur efface vos données.' },
+      { icon: '🩺', text: 'Le diagnostic évalue vos connaissances théoriques et propose un parcours (ce n’est pas une certification).' },
+      { icon: '🏅', text: 'La maîtrise d’une compétence vient des exercices et révisions, jamais de la simple lecture.' },
+      { icon: '📊', text: 'Toutes les statistiques sont calculées à partir de vos données réelles.' },
+      { icon: '💾', text: 'Sauvegardez régulièrement vos données (JSON) et exportez vos bilans en PDF.' },
+    ],
+  },
+  journal: {
+    icon: '📓',
+    title: 'Mon journal',
+    intro: 'Votre carnet de séances et les fiches de vos chevaux.',
+    tips: [
+      { icon: '➕', text: 'Ajoutez une entrée après chaque séance : type, objectifs, ressenti, points positifs et à améliorer.' },
+      { icon: '🔎', text: 'Recherchez et filtrez par date, type de séance, discipline ou cheval.' },
+      { icon: '🐴', text: 'Chaque cheval a son historique (séances, exercices, observations).' },
+      { icon: '🩺', text: 'Vos observations restent personnelles : elles ne remplacent pas l’avis d’un vétérinaire.' },
+    ],
+  },
+  ressources: {
+    icon: '🗂️',
+    title: 'Ressources',
+    intro: 'Dictionnaire, atlas anatomique, atelier du matériel, manège interactif et comportement du cheval.',
+    tips: [
+      { icon: '📖', text: 'Le dictionnaire se consulte aussi depuis les fiches : touchez un mot souligné.' },
+      { icon: '🦴', text: 'Dans l’atlas, touchez une région du schéma pour afficher son nom et sa fonction.' },
+      { icon: '🏟️', text: 'Le manège anime les figures : un support de compréhension, pas une consigne de pratique.' },
+      { icon: '👂', text: 'Comportement : un signal isolé ne suffit jamais à conclure.' },
     ],
   },
 };

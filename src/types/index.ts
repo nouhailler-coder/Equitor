@@ -58,16 +58,6 @@ export interface Lesson {
   version: number;
 }
 
-export interface GlossaryTerm {
-  id: string;
-  termFr: string;
-  synonymeOuVariante: string;
-  category: string;
-  definitionFr: string;
-  exampleFr: string;
-  associatedLessonIds?: string[];
-  domaineTechnique: string;
-}
 
 export type QuizQuestionType = 'single_choice' | 'multiple_choice' | 'true_false' | 'scenario';
 
@@ -93,76 +83,6 @@ export interface Pathway {
   lessonIds: string[];
 }
 
-export interface Horse {
-  id: string;
-  name: string;
-  nickname?: string;
-  breed?: string;
-  birthYear?: number;
-  temperament?: string;
-  specialNotes?: string;
-  isFavorite?: boolean;
-  createdAt: number;
-  updatedAt: number;
-}
+/** Modèles des données personnelles (schéma IndexedDB v2) : voir ./models.ts. */
 
-export interface RidingSession {
-  id: string;
-  horseId?: string;
-  horseName?: string;
-  date: string; // YYYY-MM-DD
-  durationMinutes: number;
-  theme: string;
-  objectives: string[];
-  exercises: string[];
-  observations: string;
-  horseWelfareNotes?: string;
-  riderFeelScore: number; // 1 to 5
-  horseRelaxationScore: number; // 1 to 5
-  successes: string;
-  difficulties: string;
-  nextGoals: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
-export interface UserProgress {
-  lessonId: string;
-  status: 'non_commence' | 'en_cours' | 'termine';
-  lastViewedAt: number;
-  completedAt?: number;
-  reviewCount: number;
-  personalNotes?: string;
-}
-
-export interface QuizAttempt {
-  id: string;
-  questionId: string;
-  selectedOptionIndexes: number[];
-  isCorrect: boolean;
-  attemptedAt: number;
-}
-
-export interface FavoriteItem {
-  id: string; // usually 'lesson_' + lessonId
-  type: 'lesson' | 'term' | 'exercise';
-  targetId: string;
-  createdAt: number;
-}
-
-export interface ChecklistItem {
-  id: string;
-  label: string;
-  category: 'cavalier' | 'cheval_materiel' | 'manege_securite' | 'recuperation';
-  critical: boolean;
-}
-
-export interface AppBackupData {
-  version: string;
-  exportedAt: string;
-  horses: Horse[];
-  sessions: RidingSession[];
-  progress: UserProgress[];
-  quizAttempts: QuizAttempt[];
-  favorites: FavoriteItem[];
-}
+/** Modèles des données personnelles (schéma IndexedDB v2) : voir ./models.ts. */

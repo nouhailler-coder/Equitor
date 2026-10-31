@@ -1,45 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useEscape } from '../../hooks/useEscape';
 import {
   BookOpen,
-  CircleHelp,
-  FileText,
-  PlayCircle,
+  BookA,
+  CalendarCheck,
   ClipboardCheck,
+  CircleHelp,
   Download,
+  Dumbbell,
+  FileText,
   GraduationCap,
   HardDriveDownload,
   Home,
+  Layers,
+  LayoutGrid,
   NotebookPen,
-  PlusCircle,
+  PlayCircle,
+  Route,
   Scale,
   Search,
   Settings,
-  User,
+  Stethoscope,
+  TrendingUp,
   WifiOff,
   X,
 } from 'lucide-react';
-import type { TabType } from './Navigation';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { useAppUpdate } from '../../hooks/useAppUpdate';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+import type { OverlayName } from '../../app/overlays';
 
-export type MenuAction =
-  | { type: 'tab'; tab: TabType }
-  | {
-      type: 'modal';
-      modal:
-        | 'search'
-        | 'newSession'
-        | 'checklists'
-        | 'horses'
-        | 'backup'
-        | 'offlineGuide'
-        | 'legal'
-        | 'legalNotice'
-        | 'help'
-        | 'onboarding'
-        | 'install'
-        | 'systemSettings';
-    };
+export type MenuAction = { type: 'route'; to: string } | { type: 'overlay'; name: OverlayName } | { type: 'help' };
 
 interface MenuItem {
   label: string;
@@ -48,78 +39,70 @@ interface MenuItem {
   badge?: string;
 }
 
-interface MenuCategory {
-  title: string;
-  items: MenuItem[];
-}
-
 interface HamburgerMenuProps {
   isOpen: boolean;
-  currentTab: TabType;
+  currentPath: string;
   onClose: () => void;
   onAction: (action: MenuAction) => void;
 }
 
-const iconClass = 'w-4.5 h-4.5 shrink-0';
+const ic = 'w-4.5 h-4.5 shrink-0';
+const route = (to: string): MenuAction => ({ type: 'route', to });
+const overlay = (name: OverlayName): MenuAction => ({ type: 'overlay', name });
 
-export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab, onClose, onAction }) => {
+export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentPath, onClose, onAction }) => {
   const { isInstalled } = usePWAInstall();
   const update = useAppUpdate();
+  const ref = useRef<HTMLElement>(null);
+  useFocusTrap(ref, isOpen);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, onClose]);
+  useEscape(!!isOpen, onClose);
 
-  const categories: MenuCategory[] = [
+  const categories: { title: string; items: MenuItem[] }[] = [
     {
       title: 'Général',
       items: [
-        { label: 'Accueil', icon: <Home className={iconClass} />, action: { type: 'tab', tab: 'accueil' } },
-        { label: 'Rechercher', icon: <Search className={iconClass} />, action: { type: 'modal', modal: 'search' } },
+        { label: 'Accueil', icon: <Home className={ic} />, action: route('accueil') },
+        { label: 'Rechercher', icon: <Search className={ic} />, action: overlay('search') },
       ],
     },
     {
       title: 'Apprendre',
       items: [
-        { label: 'Bibliothèque des modules', icon: <BookOpen className={iconClass} />, action: { type: 'tab', tab: 'apprendre' } },
+        { label: 'Fiches pédagogiques', icon: <BookOpen className={ic} />, action: route('apprendre') },
+        { label: 'Mon parcours', icon: <Route className={ic} />, action: route('apprendre/parcours') },
+        { label: 'Ressources', icon: <LayoutGrid className={ic} />, action: route('ressources') },
+        { label: 'Dictionnaire équestre', icon: <BookA className={ic} />, action: route('ressources/dictionnaire') },
       ],
     },
     {
-      title: 'Pratiquer à l’écurie',
+      title: 'Pratiquer & réviser',
       items: [
-        { label: 'Journal des séances', icon: <NotebookPen className={iconClass} />, action: { type: 'tab', tab: 'pratiquer' } },
-        { label: 'Nouvelle séance', icon: <PlusCircle className={iconClass} />, action: { type: 'modal', modal: 'newSession' } },
-        { label: 'Checklists d’écurie', icon: <ClipboardCheck className={iconClass} />, action: { type: 'modal', modal: 'checklists' } },
-        { label: 'Mes chevaux', icon: <span className="w-4.5 text-center shrink-0">🐴</span>, action: { type: 'modal', modal: 'horses' } },
+        { label: 'Exercices interactifs', icon: <Dumbbell className={ic} />, action: route('pratiquer') },
+        { label: 'Préparer une séance', icon: <CalendarCheck className={ic} />, action: route('pratiquer/preparation') },
+        { label: 'Checklists', icon: <ClipboardCheck className={ic} />, action: route('pratiquer/checklists') },
+        { label: 'Révisions', icon: <GraduationCap className={ic} />, action: route('reviser') },
+        { label: 'Cartes mémoire', icon: <Layers className={ic} />, action: route('reviser/cartes') },
       ],
     },
     {
-      title: 'Réviser',
+      title: 'Suivi',
       items: [
-        { label: 'Quiz & flashcards', icon: <GraduationCap className={iconClass} />, action: { type: 'tab', tab: 'reviser' } },
-      ],
-    },
-    {
-      title: 'Suivi & données',
-      items: [
-        { label: 'Mon suivi', icon: <User className={iconClass} />, action: { type: 'tab', tab: 'suivi' } },
-        { label: 'Sauvegarde & restauration', icon: <HardDriveDownload className={iconClass} />, action: { type: 'modal', modal: 'backup' } },
+        { label: 'Ma progression', icon: <TrendingUp className={ic} />, action: route('progression') },
+        { label: 'Diagnostic', icon: <Stethoscope className={ic} />, action: route('progression/diagnostic') },
+        { label: 'Mon journal', icon: <NotebookPen className={ic} />, action: route('journal') },
+        { label: 'Sauvegarde & export', icon: <HardDriveDownload className={ic} />, action: route('progression/donnees') },
       ],
     },
     {
       title: 'Aide & informations',
       items: [
-        { label: 'Aide sur cet écran', icon: <CircleHelp className={iconClass} />, action: { type: 'modal', modal: 'help' } },
-        { label: 'Revoir l’introduction', icon: <PlayCircle className={iconClass} />, action: { type: 'modal', modal: 'onboarding' } },
-        ...(isInstalled
-          ? []
-          : [{ label: 'Installer l’application', icon: <Download className={iconClass} />, action: { type: 'modal', modal: 'install' } as MenuAction }]),
-        { label: 'Mode hors ligne', icon: <WifiOff className={iconClass} />, action: { type: 'modal', modal: 'offlineGuide' } },
-        { label: 'Principes & déontologie', icon: <Scale className={iconClass} />, action: { type: 'modal', modal: 'legal' } },
-        { label: 'Mentions légales', icon: <FileText className={iconClass} />, action: { type: 'modal', modal: 'legalNotice' } },
+        { label: 'Aide sur cet écran', icon: <CircleHelp className={ic} />, action: { type: 'help' } },
+        { label: 'Revoir l’introduction', icon: <PlayCircle className={ic} />, action: overlay('onboarding') },
+        ...(isInstalled ? [] : [{ label: 'Installer l’application', icon: <Download className={ic} />, action: overlay('install') }]),
+        { label: 'Mode hors ligne', icon: <WifiOff className={ic} />, action: overlay('offlineGuide') },
+        { label: 'Principes & déontologie', icon: <Scale className={ic} />, action: overlay('ethics') },
+        { label: 'Mentions légales', icon: <FileText className={ic} />, action: overlay('legalNotice') },
       ],
     },
     {
@@ -127,8 +110,8 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
       items: [
         {
           label: 'Paramètres système',
-          icon: <Settings className={iconClass} />,
-          action: { type: 'modal', modal: 'systemSettings' },
+          icon: <Settings className={ic} />,
+          action: overlay('systemSettings'),
           badge: update.status === 'ready' ? 'MAJ' : undefined,
         },
       ],
@@ -136,20 +119,10 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
   ];
 
   return (
-    <div
-      className={`fixed inset-0 z-50 ${isOpen ? '' : 'pointer-events-none'}`}
-      aria-hidden={!isOpen}
-    >
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
-          isOpen ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
-
-      {/* Drawer */}
+    <div className={`fixed inset-0 z-50 ${isOpen ? '' : 'pointer-events-none'}`} aria-hidden={!isOpen}>
+      <div onClick={onClose} className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
       <aside
+        ref={ref}
         role="dialog"
         aria-modal="true"
         aria-label="Menu principal"
@@ -161,11 +134,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
           <span className="font-black tracking-tight">
             Équi<span className="text-amber-400">Progression</span>
           </span>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg text-emerald-200 hover:bg-emerald-900 transition"
-            aria-label="Fermer le menu"
-          >
+          <button onClick={onClose} className="p-2 rounded-lg text-emerald-200 hover:bg-emerald-900 transition" aria-label="Fermer le menu">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -173,29 +142,22 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2 pb-[env(safe-area-inset-bottom)]">
           {categories.map((cat) => (
             <div key={cat.title} className="px-3 py-2">
-              <h3 className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-amber-400/90">
-                {cat.title}
-              </h3>
+              <h3 className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-amber-400/90">{cat.title}</h3>
               <ul>
                 {cat.items.map((item) => {
-                  const isActive = item.action.type === 'tab' && item.action.tab === currentTab;
+                  const isActive = item.action.type === 'route' && item.action.to === currentPath;
                   return (
                     <li key={item.label}>
                       <button
                         onClick={() => onAction(item.action)}
+                        tabIndex={isOpen ? 0 : -1}
                         className={`w-full flex items-center gap-3 px-2 py-2.5 rounded-lg text-sm text-left transition ${
-                          isActive
-                            ? 'bg-emerald-900/80 text-amber-300 font-bold'
-                            : 'text-stone-200 hover:bg-emerald-900/50 active:bg-emerald-900'
+                          isActive ? 'bg-emerald-900/80 text-amber-300 font-bold' : 'text-stone-200 hover:bg-emerald-900/50 active:bg-emerald-900'
                         }`}
                       >
                         {item.icon}
                         <span className="flex-1">{item.label}</span>
-                        {item.badge && (
-                          <span className="text-[9px] font-black bg-amber-500 text-stone-950 px-1.5 py-0.5 rounded-full">
-                            {item.badge}
-                          </span>
-                        )}
+                        {item.badge && <span className="text-[9px] font-black bg-amber-500 text-stone-950 px-1.5 py-0.5 rounded-full">{item.badge}</span>}
                       </button>
                     </li>
                   );
@@ -205,9 +167,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentTab
           ))}
         </nav>
 
-        <div className="px-5 py-3 border-t border-emerald-900/60 text-[10px] text-emerald-200/60 shrink-0">
-          v{update.current.version} · 100 % locale
-        </div>
+        <div className="px-5 py-3 border-t border-emerald-900/60 text-[10px] text-emerald-200/60 shrink-0">v{update.current.version} · 100 % locale</div>
       </aside>
     </div>
   );

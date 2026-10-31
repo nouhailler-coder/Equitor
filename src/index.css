@@ -1,1 +1,113 @@
 @import "tailwindcss";
+
+/* Mode sombre piloté par la classe `.dark` sur <html> (clair / sombre / automatique). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-950: #0f1d17;
+  --color-brand-900: #162e24;
+  --color-brand-800: #1e3a2f;
+  --color-brand-700: #24493a;
+}
+
+:root {
+  color-scheme: light;
+}
+:root.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus clavier toujours visible (WCAG 2.4.7). */
+:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Mode sombre des écrans historiques (écrits sans variantes `dark:`) :
+ * on remappe les surfaces et textes clairs les plus courants. Les nouveaux écrans
+ * utilisent directement les variantes `dark:` de Tailwind.
+ */
+.dark body {
+  background-color: #0c1512;
+  color: #e7e5e4;
+}
+.dark :where(.bg-white, .bg-stone-50, .bg-stone-100, [class*='bg-stone-100/'], [class*='bg-white/']) {
+  background-color: #15211c;
+}
+.dark :where(.bg-stone-200) {
+  background-color: #1f2d27;
+}
+/* …sauf le texte sombre posé sur les boutons ambre, qui doit le rester (contraste). */
+.dark :where(.text-stone-900, .text-stone-950, .text-stone-800):not(.bg-amber-400, .bg-amber-500, .bg-amber-600, .bg-yellow-400) {
+  color: #f5f5f4;
+}
+.dark :where(.text-stone-700, .text-stone-600) {
+  color: #d6d3d1;
+}
+.dark :where(.text-stone-500, .text-stone-400) {
+  color: #a8a29e;
+}
+.dark :where(.border-stone-100, .border-stone-200, .border-stone-300, .divide-stone-100 > *) {
+  border-color: #2a3a33;
+}
+.dark :where(.bg-emerald-50, .bg-emerald-100, [class*='bg-emerald-50/']) {
+  background-color: rgb(6 78 59 / 0.35);
+}
+.dark :where(.bg-amber-50, .bg-amber-100, [class*='bg-amber-50/']) {
+  background-color: rgb(120 53 15 / 0.35);
+}
+.dark :where(.bg-rose-50, .bg-red-50, .bg-rose-100) {
+  background-color: rgb(127 29 29 / 0.35);
+}
+.dark :where(.bg-sky-50, .bg-blue-50) {
+  background-color: rgb(12 74 110 / 0.35);
+}
+.dark :where(.text-emerald-950, .text-emerald-900, .text-emerald-800) {
+  color: #6ee7b7;
+}
+.dark :where(.text-amber-950, .text-amber-900, .text-amber-800) {
+  color: #fcd34d;
+}
+.dark :where(.text-rose-950, .text-rose-900, .text-rose-800, .text-red-800, .text-red-700) {
+  color: #fda4af;
+}
+.dark :where(.text-sky-800, .text-sky-900) {
+  color: #7dd3fc;
+}
+.dark :where(.border-emerald-200, .border-emerald-300, .border-amber-200, .border-amber-300, .border-rose-200, .border-red-200, .border-sky-200) {
+  border-color: #2f4a3f;
+}
+.dark :where(input, textarea, select) {
+  color-scheme: dark;
+}
+
+/* Trajectoire animée du manège interactif. */
+@keyframes equi-dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Impression / export PDF : seul le document imprimé est visible. */
+@media print {
+  body > *:not(.print-root) {
+    display: none !important;
+  }
+}

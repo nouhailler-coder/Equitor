@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useAppUpdate } from '../../hooks/useAppUpdate';
 import { resetLegalNotice } from '../../legal/legalStorage';
+import { applyTheme, readThemePreference } from '../../app/theme';
+import { saveSettings } from '../../services/storage/repos';
+import type { ThemePreference } from '../../types/models';
 import { resetScreenGuides } from '../../onboarding/ScreenGuideSheet';
 import {
   applyUpdate,
@@ -43,6 +46,7 @@ const STATUS_LABELS: Record<UpdateStatus, { text: string; tone: string }> = {
 export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({ isOpen, onClose, onOpenLegalNotice }) => {
   const update = useAppUpdate();
   const [confirmForce, setConfirmForce] = useState(false);
+  const [theme, setTheme] = useState<ThemePreference>(readThemePreference);
   const [isForcing, setIsForcing] = useState(false);
 
   if (!isOpen) return null;
@@ -185,6 +189,33 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({ isOpen
               </span>
             </span>
           </label>
+
+          {/* Theme */}
+          <fieldset className="rounded-xl border border-stone-200 p-3">
+            <legend className="px-1 font-semibold text-stone-900">Apparence</legend>
+            <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Thème">
+              {([
+                ['clair', '☀️ Clair'],
+                ['sombre', '🌙 Sombre'],
+                ['auto', '🖥️ Auto'],
+              ] as [ThemePreference, string][]).map(([id, l]) => (
+                <button
+                  key={id}
+                  role="radio"
+                  aria-checked={theme === id}
+                  onClick={() => {
+                    setTheme(id);
+                    applyTheme(id);
+                    void saveSettings({ theme: id });
+                  }}
+                  className={`rounded-xl border-2 py-2 text-xs font-semibold ${theme === id ? 'border-emerald-700 bg-emerald-50' : 'border-stone-200'}`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-stone-500 mt-2">« Auto » suit le réglage clair/sombre de votre appareil.</p>
+          </fieldset>
 
           {/* Legal */}
           <button

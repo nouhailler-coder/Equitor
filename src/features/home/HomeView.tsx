@@ -1,280 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { InfoTip } from '../../components/common/InfoTip';
-import type { Lesson, Chapter, RidingSession, UserProgress } from '../../types';
-import { CHAPTERS_CATALOG } from '../../data/chapters';
-import { LESSONS_CATALOG } from '../../data/lessons';
-import { PATHWAYS_CATALOG } from '../../data/pathways';
-import { db } from '../../db';
-import { LevelBadge, RiskBadge } from '../../components/common/Badge';
+import React, { useMemo } from 'react';
+import { BookOpen, CalendarCheck, NotebookPen, Play } from 'lucide-react';
+import type { DiagnosticResult, DomainId, Favorite, JournalEntry, LessonProgress, SessionPlan, SkillProgress, UserProfile } from '../../types/models';
+import { useLive } from '../../hooks/useLive';
+import { db } from '../../services/storage/db';
+import { recommendSkills } from '../../services/progression/recommend';
+import { LESSON_BY_ID, SKILLS, EXERCISE_BY_ID } from '../../data/catalog';
+import { DICTIONARY_BY_ID } from '../../data/dictionary';
+import { EQUIPMENT } from '../../data/equipment';
+import { ARENA_FIGURES } from '../../data/arenaFigures';
+import { BEHAVIORS } from '../../data/behaviors';
+import { ATLAS } from '../../data/atlas';
+import { DOMAIN_BY_ID } from '../../data/skills';
+import { SESSION_TYPE_LABEL, fmtDate } from '../../data/labels';
+import { Link, StatTile, btn, card } from '../../components/ui/kit';
+import { navigate } from '../../app/router';
+import { overlays } from '../../app/overlays';
+import { MasteryChip } from '../progression/SkillsView';
 
-interface HomeViewProps {
-  onSelectLesson: (lesson: Lesson) => void;
-  onSelectChapter: (chapter: Chapter) => void;
-  onNavigateTab: (tab: 'accueil' | 'apprendre' | 'pratiquer' | 'reviser' | 'suivi') => void;
-  onOpenNewSession: () => void;
+/** Libellé et destination d'un favori, quel que soit son type. */
+export function favoriteTarget(f: Favorite): { label: string; icon: string; open: () => void } | null {
+  switch (f.type) {
+    case 'lesson':
+      return LESSON_BY_ID[f.targetId] ? { label: LESSON_BY_ID[f.targetId].titleFr, icon: '📖', open: () => overlays.openLesson(f.targetId) } : null;
+    case 'term':
+      return DICTIONARY_BY_ID[f.targetId] ? { label: DICTIONARY_BY_ID[f.targetId].term, icon: '🔤', open: () => navigate(`ressources/dictionnaire/${f.targetId}`) } : null;
+    case 'exercise':
+      return EXERCISE_BY_ID[f.targetId] ? { label: EXERCISE_BY_ID[f.targetId].title, icon: '🧩', open: () => navigate(`pratiquer/exercice/${f.targetId}`) } : null;
+    case 'journal':
+      return { label: 'Séance du journal', icon: '📓', open: () => navigate(`journal/seance/${f.targetId}`) };
+    case 'equipment': {
+      const e = EQUIPMENT.find((x) => x.id === f.targetId);
+      return e ? { label: e.name, icon: '🧰', open: () => navigate(`ressources/materiel/${e.id}`) } : null;
+    }
+    case 'figure': {
+      const x = ARENA_FIGURES.find((y) => y.id === f.targetId);
+      return x ? { label: x.name, icon: '🏟️', open: () => navigate(`ressources/manege/${x.id}`) } : null;
+    }
+    case 'behavior': {
+      const b = BEHAVIORS.find((y) => y.id === f.targetId);
+      return b ? { label: b.title, icon: '👂', open: () => navigate(`ressources/comportement/${b.id}`) } : null;
+    }
+    case 'anatomy':
+      return ATLAS[f.targetId] ? { label: ATLAS[f.targetId].name, icon: '🦴', open: () => navigate(`ressources/atlas/${f.targetId}`) } : null;
+  }
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({
-  onSelectLesson,
-  onSelectChapter,
-  onNavigateTab,
-  onOpenNewSession,
-}) => {
-  const [lastLesson, setLastLesson] = useState<Lesson | null>(null);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [recentSessions, setRecentSessions] = useState<RidingSession[]>([]);
-  const [favoriteLessons, setFavoriteLessons] = useState<Lesson[]>([]);
-  const [horsesCount, setHorsesCount] = useState(0);
+export const HomeView: React.FC = () => {
+  const profile = useLive(async () => (await db.profile.get('me')) ?? null, [], null as UserProfile | null);
+  const diagnostic = useLive(async () => (await db.diagnostics.orderBy('completedAt').last()) ?? null, [], null as DiagnosticResult | null);
+  const skillList = useLive(() => db.skillProgress.toArray(), [], [] as SkillProgress[]);
+  const lastLesson = useLive(async () => (await db.lessonProgress.orderBy('lastViewedAt').last()) ?? null, [], null as LessonProgress | null);
+  const due = useLive(async () => {
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    return db.revisionItems.where('dueAt').belowOrEqual(end.toISOString()).count();
+  }, [], 0);
+  const lastEntry = useLive(async () => (await db.ridingSessions.orderBy('date').last()) ?? null, [], null as JournalEntry | null);
+  const nextPlan = useLive(async () => (await db.sessionPlans.where('status').equals('prevu').sortBy('date'))[0] ?? null, [], null as SessionPlan | null);
+  const favorites = useLive(() => db.favorites.orderBy('createdAt').reverse().limit(8).toArray(), [], [] as Favorite[]);
+  const counts = useLive(async () => ({ lessons: await db.lessonProgress.count(), sessions: await db.ridingSessions.count(), horses: await db.horses.count() }), [], { lessons: 0, sessions: 0, horses: 0 });
 
-  useEffect(() => {
-    const loadHomeData = async () => {
-      // 1. User Progress
-      const allProgress = await db.userProgress.toArray();
-      const completed = allProgress.filter((p) => p.status === 'termine').length;
-      setCompletedCount(completed);
-
-      // 2. Last viewed lesson
-      const sortedByView = [...allProgress].sort((a, b) => b.lastViewedAt - a.lastViewedAt);
-      if (sortedByView.length > 0) {
-        const found = LESSONS_CATALOG.find((l) => l.id === sortedByView[0].lessonId);
-        if (found) setLastLesson(found);
-      } else {
-        // Default to first lesson if none viewed
-        setLastLesson(LESSONS_CATALOG[0]);
-      }
-
-      // 3. Recent Riding Sessions
-      const sessions = await db.ridingSessions.orderBy('date').reverse().limit(3).toArray();
-      setRecentSessions(sessions);
-
-      // 4. Favorites
-      const favs = await db.favorites.where('type').equals('lesson').toArray();
-      const favLessonList = favs
-        .map((f) => LESSONS_CATALOG.find((l) => l.id === f.targetId))
-        .filter((l): l is Lesson => !!l);
-      setFavoriteLessons(favLessonList.slice(0, 4));
-
-      // 5. Horses count
-      const hCount = await db.horses.count();
-      setHorsesCount(hCount);
-    };
-
-    loadHomeData();
-  }, []);
+  const progress = useMemo(() => Object.fromEntries(skillList.map((s) => [s.skillId, s])), [skillList]);
+  const recos = useMemo(
+    () => recommendSkills({ skills: SKILLS, progress, level: profile?.level ?? 'debutant', interests: (profile?.interests ?? []) as DomainId[], domainScores: diagnostic?.domainScores }, 3),
+    [progress, profile, diagnostic],
+  );
+  const mastered = skillList.filter((s) => s.state === 'maitrise').length;
+  const resume = lastLesson ? LESSON_BY_ID[lastLesson.lessonId] : null;
 
   return (
-    <div className="space-y-6 pb-20">
-      {/* Hero Welcome banner */}
-      <div className="rounded-3xl bg-gradient-to-br from-[#162e24] via-[#1c382c] to-[#0f1d17] p-5 sm:p-7 text-white shadow-xl relative overflow-hidden">
-        {/* Subtle decorative background circle */}
+    <div className="space-y-5">
+      <div className="rounded-3xl bg-gradient-to-br from-brand-900 via-[#1c382c] to-brand-950 p-5 sm:p-6 text-white shadow-xl relative overflow-hidden">
         <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-amber-400/10 pointer-events-none" />
-
-        <div className="relative z-10 max-w-lg">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-semibold mb-3 border border-amber-400/30">
-            <span>📚</span>
-            <span>Doctrine équestre classique</span>
-          </div>
-
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight leading-tight">
-            Bienvenue dans votre carnet d’apprentissage équestre
-          </h2>
-          <p className="mt-2 text-xs sm:text-sm text-emerald-100/80 leading-relaxed">
-            Comprenez les principes de l’équitation classique, préparez vos séances d’écurie et suivez votre progression en toute sécurité, 100 % hors ligne.
-          </p>
-
-          {/* Quick Action Buttons */}
-          <div className="mt-5 flex items-center gap-3 flex-wrap">
-            <button
-              onClick={onOpenNewSession}
-              className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center gap-2"
-            >
-              <span>🏇</span>
-              <span>Préparer une séance</span>
-            </button>
-            <button
-              onClick={() => onNavigateTab('apprendre')}
-              className="px-4 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-700/60 font-semibold text-xs sm:text-sm transition active:scale-95"
-            >
-              Explorer les 18 chapitres
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Real Statistics Quick Cards */}
-      <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200 shadow-xs text-center">
-          <div className="text-xl sm:text-2xl font-black text-emerald-800">
-            {completedCount}
-            <span className="text-xs text-stone-400 font-normal"> / {LESSONS_CATALOG.length}</span>
-          </div>
-          <p className="text-[11px] sm:text-xs text-stone-500 font-medium mt-0.5">
-            Fiches assimilées
-          </p>
-        </div>
-
-        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200 shadow-xs text-center">
-          <div className="text-xl sm:text-2xl font-black text-amber-700">
-            {recentSessions.length > 0 ? recentSessions.length : '0'}
-          </div>
-          <p className="text-[11px] sm:text-xs text-stone-500 font-medium mt-0.5">
-            Séances journal
-          </p>
-        </div>
-
-        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200 shadow-xs text-center">
-          <div className="text-xl sm:text-2xl font-black text-sky-800">
-            {horsesCount}
-          </div>
-          <p className="text-[11px] sm:text-xs text-stone-500 font-medium mt-0.5">
-            Chevaux enregistrés
-          </p>
-        </div>
-      </div>
-
-      {/* Reprendre le dernier apprentissage */}
-      {lastLesson && (
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200 shadow-xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
-              <span>▶</span> Reprendre l’apprentissage
-            </span>
-            <span className="text-xs text-stone-400 font-medium">
-              Chapitre {lastLesson.chapterNumber}
-            </span>
-          </div>
-
-          <h3 className="font-bold text-base sm:text-lg text-stone-900 leading-snug">
-            {lastLesson.titleFr}
-          </h3>
-          <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 mt-1 leading-relaxed">
-            {lastLesson.summaryFr}
-          </p>
-
-          <div className="mt-3 flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-stone-100">
-            <div className="flex items-center gap-1.5">
-              <LevelBadge level={lastLesson.level} />
-              <RiskBadge level={lastLesson.riskLevel} />
-            </div>
-
-            <button
-              onClick={() => onSelectLesson(lastLesson)}
-              className="px-3.5 py-1.5 rounded-xl bg-[#162e24] hover:bg-[#1e3d30] text-white font-semibold text-xs transition flex items-center gap-1"
-            >
-              <span>Lire la fiche</span>
-              <span>→</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Parcours Pédagogiques (A, B, C) */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-black text-base sm:text-lg text-stone-900 tracking-tight flex items-center gap-2">
-            <span>🗺️</span>
-            <span>Parcours Pédagogiques Recommandés</span>
-            <InfoTip label="Parcours" text="Trois parcours de lecture : A pour découvrir les bases, B pour consolider, C pour approfondir. Touchez une étape pour ouvrir le chapitre correspondant." />
-          </h3>
-          <button
-            onClick={() => onNavigateTab('apprendre')}
-            className="text-xs font-semibold text-emerald-800 hover:text-emerald-700"
-          >
-            Voir tout
+        <h1 className="text-xl sm:text-2xl font-black tracking-tight">{profile?.firstName ? `Bonjour ${profile.firstName} !` : 'Bienvenue sur ÉquiProgression'}</h1>
+        <p className="text-sm text-emerald-100/80 mt-1 max-w-lg">Comprendre le cheval, apprendre la théorie, préparer vos séances et suivre votre progression — 100 % hors ligne.</p>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <button className={btn('accent')} onClick={() => navigate(due ? 'reviser/session' : 'reviser')}>
+            <Play className="w-4 h-4" /> {due ? `${due} révision(s) aujourd’hui` : 'Réviser'}
           </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {PATHWAYS_CATALOG.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white rounded-2xl p-4 border border-stone-200 shadow-xs hover:border-emerald-300 transition flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 font-black text-xs flex items-center justify-center">
-                    {p.code}
-                  </span>
-                  <span className="text-[10px] font-semibold text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
-                    {p.lessonIds.length} fiches
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm text-stone-900">{p.titleFr}</h4>
-                <p className="text-[11px] font-medium text-amber-800 mb-1.5">{p.subtitleFr}</p>
-                <p className="text-xs text-stone-600 line-clamp-3 leading-relaxed">
-                  {p.descriptionFr}
-                </p>
-              </div>
-
-              <button
-                onClick={() => {
-                  const firstLesson = LESSONS_CATALOG.find((l) => l.id === p.lessonIds[0]);
-                  if (firstLesson) onSelectLesson(firstLesson);
-                }}
-                className="mt-4 w-full py-2 rounded-xl bg-stone-100 hover:bg-emerald-50 text-emerald-900 font-semibold text-xs text-center border border-stone-200 transition"
-              >
-                Commencer le parcours {p.code}
-              </button>
-            </div>
-          ))}
+          {!profile ? (
+            <button className={btn('secondary', 'bg-white/10 border-white/30 text-white hover:bg-white/20')} onClick={() => navigate('progression/profil')}>Créer mon profil</button>
+          ) : !diagnostic ? (
+            <button className={btn('secondary', 'bg-white/10 border-white/30 text-white hover:bg-white/20')} onClick={() => navigate('progression/diagnostic')}>Faire le diagnostic</button>
+          ) : null}
         </div>
       </div>
 
-      {/* Favoris récents */}
-      {favoriteLessons.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-black text-base text-stone-900 tracking-tight flex items-center gap-1.5">
-              <span>⭐</span>
-              <span>Vos Fiches Favorites</span>
-              <InfoTip label="Favoris" text="Ajoutez une fiche à vos favoris avec l’étoile ⭐ dans la fiche : elle apparaît ici pour y revenir en un geste." />
-            </h3>
-            <button
-              onClick={() => onNavigateTab('suivi')}
-              className="text-xs font-semibold text-emerald-800"
-            >
-              Toutes les favorites
-            </button>
-          </div>
+      <div className="grid grid-cols-3 gap-2">
+        <StatTile value={`${mastered}/${SKILLS.length}`} label="compétences maîtrisées" onClick={() => navigate('progression/competences')} />
+        <StatTile value={counts.lessons} label="fiches consultées" onClick={() => navigate('apprendre')} />
+        <StatTile value={counts.sessions} label="séances au journal" onClick={() => navigate('journal')} />
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {favoriteLessons.map((l) => (
-              <button
-                key={l.id}
-                onClick={() => onSelectLesson(l)}
-                className="text-left p-3 rounded-xl bg-white border border-stone-200 hover:border-amber-300 transition shadow-xs group"
-              >
-                <div className="flex items-center justify-between text-[11px] text-stone-500 mb-1">
-                  <span>Chapitre {l.chapterNumber}</span>
-                  <LevelBadge level={l.level} />
-                </div>
-                <h4 className="font-bold text-xs sm:text-sm text-stone-900 group-hover:text-amber-900 transition">
-                  {l.titleFr}
-                </h4>
-              </button>
-            ))}
-          </div>
+      <section className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="font-black text-base text-stone-900 dark:text-stone-100">🎯 Prochaine étape</h2>
+          <Link to="apprendre/parcours" className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">Mon parcours →</Link>
         </div>
-      )}
+        <ul className="space-y-2">
+          {recos.map((s) => (
+            <li key={s.id} className={`${card} p-3 flex items-center gap-3`}>
+              <span className="text-xl" aria-hidden="true">{DOMAIN_BY_ID[s.domain].icon}</span>
+              <Link to={`progression/competences/${s.id}`} className="flex-1 min-w-0 space-y-1">
+                <span className="block text-sm font-bold text-stone-900 dark:text-stone-100 leading-snug">{s.name}</span>
+                <span className="flex flex-wrap items-center gap-1.5 text-[11px] text-stone-500">
+                  {DOMAIN_BY_ID[s.domain].label} <MasteryChip state={progress[s.id]?.state ?? 'non_commence'} />
+                </span>
+              </Link>
+              {s.exerciseIds[0] && (
+                <button className="rounded-lg bg-brand-900 text-white text-xs font-bold px-2.5 py-2" onClick={() => navigate(`pratiquer/exercice/${s.exerciseIds[0]}`)} aria-label={`S’exercer : ${s.name}`}>
+                  S’exercer
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      {/* Raccourci vers Réviser */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-            <span>💡</span>
-            <span>Moteur de Quiz &amp; Révisions</span>
-          </div>
-          <p className="text-xs text-stone-700 max-w-sm">
-            Testez vos connaissances sur les allures, l’assiette, les échelles et la sécurité en carrière.
-          </p>
-        </div>
-        <button
-          onClick={() => onNavigateTab('reviser')}
-          className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm shrink-0 shadow-sm transition active:scale-95"
-        >
-          Lancer un quiz
+      <div className="grid sm:grid-cols-3 gap-3">
+        <button className={`${card} p-4 text-left hover:border-emerald-500`} onClick={() => (resume ? overlays.openLesson(resume.id) : navigate('apprendre'))}>
+          <BookOpen className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
+          <p className="text-[11px] font-bold uppercase text-stone-500 mt-1">{resume ? 'Reprendre la lecture' : 'Commencer à apprendre'}</p>
+          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-snug">{resume?.titleFr ?? 'Bibliothèque des fiches'}</p>
+        </button>
+        <button className={`${card} p-4 text-left hover:border-emerald-500`} onClick={() => navigate(nextPlan ? `pratiquer/preparation/${nextPlan.id}` : 'pratiquer/preparation')}>
+          <CalendarCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
+          <p className="text-[11px] font-bold uppercase text-stone-500 mt-1">{nextPlan ? 'Prochaine séance préparée' : 'Préparer une séance'}</p>
+          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-snug">{nextPlan ? `${nextPlan.title}${nextPlan.date ? ` · ${fmtDate(nextPlan.date)}` : ''}` : 'Choisir un modèle'}</p>
+        </button>
+        <button className={`${card} p-4 text-left hover:border-emerald-500`} onClick={() => navigate(lastEntry ? 'journal' : 'journal/nouveau')}>
+          <NotebookPen className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
+          <p className="text-[11px] font-bold uppercase text-stone-500 mt-1">Mon journal</p>
+          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-snug">{lastEntry ? `Dernière : ${lastEntry.title} (${SESSION_TYPE_LABEL[lastEntry.sessionType]})` : 'Noter ma première séance'}</p>
         </button>
       </div>
+
+      <section className="space-y-2">
+        <h2 className="font-black text-base text-stone-900 dark:text-stone-100">⭐ Mes favoris</h2>
+        {favorites.length === 0 ? (
+          <p className="text-sm text-stone-500">Touchez l’étoile d’une fiche, d’un terme, d’un exercice ou d’une ressource pour la retrouver ici.</p>
+        ) : (
+          <ul className="flex flex-wrap gap-2">
+            {favorites.map((f) => {
+              const t = favoriteTarget(f);
+              return t ? (
+                <li key={f.id}>
+                  <button className="rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 px-3 py-1.5 text-xs font-semibold text-stone-800 dark:text-stone-200 hover:border-amber-400" onClick={t.open}>{t.icon} {t.label}</button>
+                </li>
+              ) : null;
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
 };

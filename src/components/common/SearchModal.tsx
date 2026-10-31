@@ -1,287 +1,160 @@
-import React, { useState, useMemo } from 'react';
-import { CHAPTERS_CATALOG } from '../../data/chapters';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useEscape } from '../../hooks/useEscape';
+import { Search, X } from 'lucide-react';
+import type { Favorite, HistoryEntry, Horse, JournalEntry, SessionPlan } from '../../types/models';
+import { useLive } from '../../hooks/useLive';
+import { db } from '../../services/storage/db';
+import { addHistory, clearHistory } from '../../services/storage/repos';
+import { buildIndex, search, suggest, type SearchCategory, type SearchDoc } from '../../services/search/search';
 import { LESSONS_CATALOG } from '../../data/lessons';
-import { GLOSSARY_CATALOG } from '../../data/glossary';
-import type { Lesson, Chapter } from '../../types';
-import { RiskBadge, LevelBadge } from './Badge';
+import { CHAPTERS_CATALOG } from '../../data/chapters';
+import { DICTIONARY } from '../../data/dictionary';
+import { EXERCISES, SKILLS } from '../../data/catalog';
+import { EQUIPMENT } from '../../data/equipment';
+import { BEHAVIORS } from '../../data/behaviors';
+import { ARENA_FIGURES } from '../../data/arenaFigures';
+import { ATLAS } from '../../data/atlas';
+import { SESSION_TYPE_LABEL } from '../../data/labels';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { navigate } from '../../app/router';
+import { overlays } from '../../app/overlays';
+import { Chips } from '../ui/kit';
 
-interface SearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelectLesson: (lesson: Lesson) => void;
-  onSelectChapter: (chapter: Chapter) => void;
+/** Contenus statiques indexés une seule fois. */
+const STATIC_DOCS: SearchDoc[] = [
+  ...LESSONS_CATALOG.map((l) => ({ id: `fiche:${l.id}`, category: 'fiche' as const, title: l.titleFr, subtitle: l.sectionThematique, body: `${l.summaryFr} ${l.vocabulary.join(' ')}` })),
+  ...CHAPTERS_CATALOG.map((c) => ({ id: `chapitre:${c.id}`, category: 'fiche' as const, title: `Module ${c.number} — ${c.titleFr}`, subtitle: c.themePrincipal, body: c.summaryFr })),
+  ...DICTIONARY.map((d) => ({ id: `terme:${d.id}`, category: 'terme' as const, title: d.term, subtitle: d.short, body: d.explanation, keywords: d.aliases })),
+  ...EXERCISES.filter((e) => !e.id.startsWith('ex-fiche-')).map((e) => ({ id: `exercice:${e.id}`, category: 'exercice' as const, title: e.title, subtitle: e.description, body: e.objective })),
+  ...SKILLS.map((s) => ({ id: `competence:${s.id}`, category: 'competence' as const, title: s.name, subtitle: s.description })),
+  ...EQUIPMENT.map((e) => ({ id: `materiel:${e.id}`, category: 'ressource' as const, title: e.name, subtitle: 'Atelier du matériel', body: `${e.description} ${e.parts.map((p) => p.name).join(' ')}` })),
+  ...BEHAVIORS.map((b) => ({ id: `comportement:${b.id}`, category: 'ressource' as const, title: b.title, subtitle: 'Comportement du cheval', body: b.description })),
+  ...ARENA_FIGURES.map((f) => ({ id: `manege:${f.id}`, category: 'ressource' as const, title: f.name, subtitle: 'Manège interactif', body: f.description })),
+  ...Object.entries(ATLAS).map(([id, a]) => ({ id: `atlas:${id}`, category: 'ressource' as const, title: a.name, subtitle: 'Atlas anatomique', body: a.explanation })),
+];
+
+const CATEGORIES: { id: SearchCategory | 'tout'; label: string }[] = [
+  { id: 'tout', label: 'Tout' },
+  { id: 'fiche', label: '📖 Fiches' },
+  { id: 'terme', label: '🔤 Dictionnaire' },
+  { id: 'exercice', label: '🧩 Exercices' },
+  { id: 'competence', label: '🎯 Compétences' },
+  { id: 'ressource', label: '🗂️ Ressources' },
+  { id: 'journal', label: '📓 Journal' },
+  { id: 'cheval', label: '🐴 Chevaux' },
+  { id: 'programme', label: '🗓️ Programmes' },
+];
+
+function openDoc(id: string) {
+  const [kind, ref] = [id.slice(0, id.indexOf(':')), id.slice(id.indexOf(':') + 1)];
+  const routes: Record<string, string> = {
+    terme: `ressources/dictionnaire/${ref}`,
+    exercice: `pratiquer/exercice/${ref}`,
+    competence: `progression/competences/${ref}`,
+    materiel: `ressources/materiel/${ref}`,
+    comportement: `ressources/comportement/${ref}`,
+    manege: `ressources/manege/${ref}`,
+    atlas: `ressources/atlas/${ref}`,
+    journal: `journal/seance/${ref}`,
+    cheval: `journal/chevaux/${ref}`,
+    programme: `pratiquer/preparation/${ref}`,
+  };
+  if (kind === 'fiche') overlays.openLesson(ref);
+  else if (kind === 'chapitre') overlays.openChapter(ref);
+  else if (routes[kind]) navigate(routes[kind]);
 }
 
-// Remove French accents for robust search
-function normalizeSearchText(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-}
-
-export const SearchModal: React.FC<SearchModalProps> = ({
-  isOpen,
-  onClose,
-  onSelectLesson,
-  onSelectChapter,
-}) => {
+export const SearchModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'lessons' | 'chapters' | 'glossary'>('all');
+  const [cat, setCat] = useState<SearchCategory | 'tout'>('tout');
+  const ref = React.useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, isOpen);
 
-  const normalizedQuery = useMemo(() => normalizeSearchText(query.trim()), [query]);
+  const horses = useLive(() => db.horses.toArray(), [], [] as Horse[]);
+  const entries = useLive(() => db.ridingSessions.toArray(), [], [] as JournalEntry[]);
+  const plans = useLive(() => db.sessionPlans.toArray(), [], [] as SessionPlan[]);
+  const favorites = useLive(() => db.favorites.toArray(), [], [] as Favorite[]);
+  const history = useLive(async () => (await db.history.where('kind').equals('recherche').sortBy('at')).reverse().slice(0, 6), [], [] as HistoryEntry[]);
 
-  const results = useMemo(() => {
-    if (!normalizedQuery) {
-      return {
-        lessons: LESSONS_CATALOG.slice(0, 4),
-        chapters: CHAPTERS_CATALOG.slice(0, 3),
-        terms: GLOSSARY_CATALOG.slice(0, 4),
-        isDefault: true,
-      };
-    }
-
-    const matchedLessons = LESSONS_CATALOG.filter((lesson) => {
-      const matchTitle = normalizeSearchText(lesson.titleFr).includes(normalizedQuery);
-      const matchSummary = normalizeSearchText(lesson.summaryFr).includes(normalizedQuery);
-      const matchVocab = lesson.vocabulary.some((v) => normalizeSearchText(v).includes(normalizedQuery));
-      const matchSection = normalizeSearchText(lesson.sectionThematique).includes(normalizedQuery);
-      return matchTitle || matchSummary || matchVocab || matchSection;
+  const index = useMemo(() => {
+    const fav = new Set(favorites.map((f) => `${f.type}:${f.targetId}`));
+    const boost = (type: string, id: string) => (fav.has(`${type}:${id}`) ? 25 : 0);
+    const dynamic: SearchDoc[] = [
+      ...horses.map((h) => ({ id: `cheval:${h.id}`, category: 'cheval' as const, title: h.name, subtitle: [h.breed, h.coat].filter(Boolean).join(' · '), body: `${h.nickname ?? ''} ${h.particularities ?? ''} ${h.notes ?? ''}` })),
+      ...entries.map((e) => ({ id: `journal:${e.id}`, category: 'journal' as const, title: e.title, subtitle: `${e.date} · ${SESSION_TYPE_LABEL[e.sessionType]}`, body: [e.objectives.join(' '), e.exercises.join(' '), e.positives, e.difficulties, e.comments, e.personalNotes].join(' '), boost: boost('journal', e.id) })),
+      ...plans.map((p) => ({ id: `programme:${p.id}`, category: 'programme' as const, title: p.title, subtitle: 'Programme de préparation', body: `${p.objective} ${p.notes}` })),
+    ];
+    const statics = STATIC_DOCS.map((d) => {
+      const [k, r] = [d.id.split(':')[0], d.id.slice(d.id.indexOf(':') + 1)];
+      const type = k === 'fiche' ? 'lesson' : k === 'terme' ? 'term' : k === 'exercice' ? 'exercise' : k;
+      return { ...d, boost: boost(type, r) };
     });
+    return buildIndex([...statics, ...dynamic]);
+  }, [horses, entries, plans, favorites]);
 
-    const matchedChapters = CHAPTERS_CATALOG.filter((chap) => {
-      const matchTitle = normalizeSearchText(chap.titleFr).includes(normalizedQuery);
-      const matchTheme = normalizeSearchText(chap.themePrincipal).includes(normalizedQuery);
-      const matchSummary = normalizeSearchText(chap.summaryFr).includes(normalizedQuery);
-      const matchVocab = chap.vocabularyTags.some((v) => normalizeSearchText(v).includes(normalizedQuery));
-      return matchTitle || matchTheme || matchSummary || matchVocab;
-    });
+  const results = useMemo(() => (query.trim() ? search(index, query, { categories: cat === 'tout' ? undefined : [cat], limit: 40 }) : []), [index, query, cat]);
+  const suggestions = useMemo(() => (query.trim().length >= 2 && results.length === 0 ? [] : suggest(index, query, 4)), [index, query, results.length]);
 
-    const matchedTerms = GLOSSARY_CATALOG.filter((term) => {
-      const matchFr = normalizeSearchText(term.termFr).includes(normalizedQuery);
-      const matchSyn = normalizeSearchText(term.synonymeOuVariante).includes(normalizedQuery);
-      const matchDef = normalizeSearchText(term.definitionFr).includes(normalizedQuery);
-      return matchFr || matchSyn || matchDef;
-    });
-
-    return {
-      lessons: matchedLessons,
-      chapters: matchedChapters,
-      terms: matchedTerms,
-      isDefault: false,
-    };
-  }, [normalizedQuery]);
+  useEscape(!!isOpen, onClose);
 
   if (!isOpen) return null;
 
+  const choose = (id: string) => {
+    void addHistory('recherche', query);
+    onClose();
+    openDoc(id);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-12 sm:pt-20">
-      <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-stone-200">
-        {/* Search Input bar */}
-        <div className="p-4 bg-stone-50 border-b border-stone-200 flex items-center gap-3">
-          <svg className="w-5 h-5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+    <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-start justify-center sm:p-4" onClick={onClose}>
+      <div ref={ref} role="dialog" aria-modal="true" aria-label="Recherche globale" onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl bg-white dark:bg-stone-900 sm:rounded-3xl shadow-2xl flex flex-col max-h-[100dvh] sm:max-h-[85dvh]">
+        <div className="p-3 border-b border-stone-200 dark:border-stone-800 flex items-center gap-2">
+          <Search className="w-5 h-5 text-stone-400 shrink-0" aria-hidden="true" />
           <input
-            type="text"
+            autoFocus
+            data-autofocus
+            type="search"
+            className="flex-1 bg-transparent text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 outline-none py-2"
+            placeholder="Fiches, termes, exercices, journal, chevaux…"
+            aria-label="Rechercher dans toute l’application"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher (ex: demi-arrêt, trot, assiette, échelles, cross...)"
-            className="flex-1 bg-transparent text-sm sm:text-base outline-none text-stone-900 placeholder:text-stone-400"
-            autoFocus
+            onKeyDown={(e) => e.key === 'Enter' && results[0] && choose(results[0].id)}
           />
-          {query && (
-            <button
-              onClick={() => setQuery('')}
-              className="text-stone-400 hover:text-stone-600 text-xs px-2 py-1 rounded bg-stone-200"
-            >
-              Effacer
-            </button>
-          )}
-          <button
-            onClick={onClose}
-            className="text-stone-500 hover:text-stone-800 p-1 rounded-lg"
-          >
-            ✕
-          </button>
+          <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800" aria-label="Fermer la recherche"><X className="w-5 h-5" /></button>
         </div>
-
-        {/* Filter Pills */}
-        <div className="px-4 py-2 bg-stone-100/70 border-b border-stone-200 flex items-center gap-2 overflow-x-auto text-xs">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-3 py-1 rounded-full font-medium transition ${
-              activeFilter === 'all'
-                ? 'bg-[#162e24] text-white shadow-xs'
-                : 'bg-white text-stone-600 hover:bg-stone-200'
-            }`}
-          >
-            Tous les résultats
-          </button>
-          <button
-            onClick={() => setActiveFilter('lessons')}
-            className={`px-3 py-1 rounded-full font-medium transition ${
-              activeFilter === 'lessons'
-                ? 'bg-[#162e24] text-white shadow-xs'
-                : 'bg-white text-stone-600 hover:bg-stone-200'
-            }`}
-          >
-            Fiches ({results.lessons.length})
-          </button>
-          <button
-            onClick={() => setActiveFilter('chapters')}
-            className={`px-3 py-1 rounded-full font-medium transition ${
-              activeFilter === 'chapters'
-                ? 'bg-[#162e24] text-white shadow-xs'
-                : 'bg-white text-stone-600 hover:bg-stone-200'
-            }`}
-          >
-            Modules ({results.chapters.length})
-          </button>
-          <button
-            onClick={() => setActiveFilter('glossary')}
-            className={`px-3 py-1 rounded-full font-medium transition ${
-              activeFilter === 'glossary'
-                ? 'bg-[#162e24] text-white shadow-xs'
-                : 'bg-white text-stone-600 hover:bg-stone-200'
-            }`}
-          >
-            Glossaire ({results.terms.length})
-          </button>
-        </div>
-
-        {/* Results scroll area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {results.isDefault && (
-            <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">
-              Suggestions &amp; thèmes fréquents
-            </p>
-          )}
-
-          {/* Lessons */}
-          {(activeFilter === 'all' || activeFilter === 'lessons') && results.lessons.length > 0 && (
-            <div>
-              <h4 className="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span>📖</span> Fiches Pédagogiques ({results.lessons.length})
-              </h4>
-              <div className="space-y-2">
-                {results.lessons.map((lesson) => (
-                  <button
-                    key={lesson.id}
-                    onClick={() => {
-                      onSelectLesson(lesson);
-                      onClose();
-                    }}
-                    className="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-emerald-50 border border-stone-200 transition group"
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-[11px] font-bold text-emerald-800">
-                        Module {lesson.chapterNumber}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <LevelBadge level={lesson.level} />
-                        <RiskBadge level={lesson.riskLevel} />
-                      </div>
-                    </div>
-                    <h5 className="font-bold text-sm text-stone-900 group-hover:text-emerald-900 transition">
-                      {lesson.titleFr}
-                    </h5>
-                    <p className="text-xs text-stone-600 line-clamp-2 mt-1 leading-relaxed">
-                      {lesson.summaryFr}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Chapters */}
-          {(activeFilter === 'all' || activeFilter === 'chapters') && results.chapters.length > 0 && (
-            <div>
-              <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span>📚</span> Modules d’apprentissage ({results.chapters.length})
-              </h4>
-              <div className="space-y-2">
-                {results.chapters.map((chap) => (
-                  <button
-                    key={chap.id}
-                    onClick={() => {
-                      onSelectChapter(chap);
-                      onClose();
-                    }}
-                    className="w-full text-left p-3 rounded-xl bg-amber-50/50 hover:bg-amber-100/70 border border-amber-200/80 transition group"
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-xs font-bold text-amber-900">
-                        Module {chap.number}
-                      </span>
-                      <span className="text-[10px] text-stone-500 font-medium">
-                        {chap.themePrincipal}
-                      </span>
-                    </div>
-                    <h5 className="font-bold text-sm text-stone-900 group-hover:text-amber-950 transition">
-                      {chap.titleFr}
-                    </h5>
-                    <p className="text-xs text-stone-600 line-clamp-2 mt-1 leading-relaxed">
-                      {chap.summaryFr}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Glossary Terms */}
-          {(activeFilter === 'all' || activeFilter === 'glossary') && results.terms.length > 0 && (
-            <div>
-              <h4 className="text-xs font-bold text-sky-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span>🔤</span> Termes du Glossaire ({results.terms.length})
-              </h4>
-              <div className="space-y-2">
-                {results.terms.map((term) => (
-                  <div
-                    key={term.id}
-                    className="p-3 rounded-xl bg-sky-50/60 border border-sky-200/80 text-left"
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-sm text-sky-950">
-                        {term.termFr}
-                      </span>
-                      <span className="text-xs text-sky-800 bg-sky-100 px-2 py-0.5 rounded font-medium">
-                        {term.synonymeOuVariante}
-                      </span>
-                    </div>
-                    <p className="text-xs text-stone-700 leading-relaxed mb-1">
-                      {term.definitionFr}
-                    </p>
-                    <p className="text-[11px] text-stone-500 italic">
-                      Exemple : « {term.exampleFr} »
-                    </p>
+        <div className="px-3 pt-2"><Chips label="Catégorie de résultats" value={cat} onChange={setCat} options={CATEGORIES} /></div>
+        <div className="overflow-y-auto p-3 flex-1">
+          {!query.trim() ? (
+            <div className="space-y-3 text-sm">
+              {history.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-bold uppercase text-stone-500">Recherches récentes</p>
+                    <button className="text-xs text-stone-500 underline" onClick={() => void clearHistory('recherche')}>Effacer</button>
                   </div>
-                ))}
-              </div>
+                  <div className="flex flex-wrap gap-1.5">{history.map((h) => <button key={h.id} className="rounded-full bg-stone-100 dark:bg-stone-800 px-3 py-1 text-xs font-semibold" onClick={() => setQuery(h.value)}>{h.value}</button>)}</div>
+                </div>
+              )}
+              <p className="text-stone-500">La recherche fonctionne hors ligne, sans tenir compte des accents ni des petites fautes de frappe.</p>
             </div>
+          ) : results.length === 0 ? (
+            <div className="text-sm text-stone-500 space-y-2">
+              <p>Aucun résultat pour « {query} ».</p>
+              {suggestions.length > 0 && <p>Suggestions : {suggestions.map((s) => <button key={s} className="underline font-semibold mr-2" onClick={() => setQuery(s)}>{s}</button>)}</p>}
+            </div>
+          ) : (
+            <ul className="space-y-1" aria-live="polite">
+              {results.map((r) => (
+                <li key={r.id}>
+                  <button onClick={() => choose(r.id)} className="w-full text-left rounded-xl px-3 py-2.5 hover:bg-stone-100 dark:hover:bg-stone-800">
+                    <span className="block text-sm font-bold text-stone-900 dark:text-stone-100">{r.boost ? '⭐ ' : ''}{r.title}</span>
+                    <span className="block text-xs text-stone-500 truncate">{CATEGORIES.find((c) => c.id === r.category)?.label} · {r.subtitle}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
-
-          {/* Empty state */}
-          {results.lessons.length === 0 &&
-            results.chapters.length === 0 &&
-            results.terms.length === 0 && (
-              <div className="text-center py-10 text-stone-500">
-                <span className="text-3xl">🔍</span>
-                <p className="mt-2 text-sm font-semibold text-stone-800">
-                  Aucun résultat pour « {query} »
-                </p>
-                <p className="text-xs text-stone-500 mt-1">
-                  Essayez un autre mot-clé ou vérifiez l’orthographe (ex: assiette, galop, demi-arrêt).
-                </p>
-              </div>
-            )}
-        </div>
-
-        {/* Footer info */}
-        <div className="p-3 bg-stone-50 border-t border-stone-200 text-center text-[11px] text-stone-500">
-          Recherche 100 % locale instantanée • Aucune donnée transmise en ligne
         </div>
       </div>
     </div>

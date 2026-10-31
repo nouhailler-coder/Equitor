@@ -3,8 +3,8 @@ import assert from 'node:assert';
 import { CHAPTERS_CATALOG } from '../data/chapters.ts';
 import { LESSONS_CATALOG } from '../data/lessons.ts';
 import { QUIZZES_CATALOG } from '../data/quizzes.ts';
-import { GLOSSARY_CATALOG } from '../data/glossary.ts';
-import { validateBackupJson } from '../db/index.ts';
+import { DICTIONARY } from '../data/dictionary.ts';
+import { validateBackup } from '../services/backup/backup.ts';
 
 describe('ÉquiProgression — Tests de validation métier', () => {
   it('contient exactement les 18 chapitres du référentiel classique', () => {
@@ -56,20 +56,19 @@ describe('ÉquiProgression — Tests de validation métier', () => {
   });
 
   it('valide le glossaire technique de l’équitation classique', () => {
-    assert.ok(GLOSSARY_CATALOG.length >= 10, 'Doit contenir des termes de glossaire');
-    for (const term of GLOSSARY_CATALOG) {
-      assert.ok(term.termFr.length > 0, 'Terme FR');
-      assert.ok(term.synonymeOuVariante.length > 0, 'Synonyme ou variante');
-      assert.ok(term.definitionFr.length > 10, 'Définition FR');
-      assert.ok(term.exampleFr.length > 0, 'Exemple d’application');
-      assert.ok(term.domaineTechnique.length > 0, 'Domaine technique');
+    assert.ok(DICTIONARY.length >= 80, 'Doit contenir les termes du dictionnaire');
+    for (const term of DICTIONARY) {
+      assert.ok(term.term.length > 0, 'Terme');
+      assert.ok(term.short.length > 10, 'Définition courte');
+      assert.ok(term.explanation.length > 20, 'Explication pédagogique');
+      assert.ok(term.example.length > 0, 'Exemple d’utilisation');
     }
   });
 
-  it('teste la validation des sauvegardes JSON', () => {
+  it('teste la validation des sauvegardes JSON (format v1)', async () => {
     // 1. JSON corrompu
-    const invalidRes = validateBackupJson('{ malformed json');
-    assert.strictEqual(invalidRes.preview.valid, false);
+    const invalidRes = await validateBackup('{ malformed json');
+    assert.strictEqual(invalidRes.ok, false);
 
     // 2. JSON valide
     const sampleBackup = JSON.stringify({
@@ -98,9 +97,10 @@ describe('ÉquiProgression — Tests de validation métier', () => {
       favorites: [],
     });
 
-    const validRes = validateBackupJson(sampleBackup);
-    assert.strictEqual(validRes.preview.valid, true);
-    assert.strictEqual(validRes.preview.horsesCount, 1);
-    assert.strictEqual(validRes.preview.sessionsCount, 1);
+    const validRes = await validateBackup(sampleBackup);
+    assert.ok(validRes.ok);
+    if (!validRes.ok) return;
+    assert.strictEqual(validRes.preview.counts.horses, 1);
+    assert.strictEqual(validRes.preview.counts.ridingSessions, 1);
   });
 });

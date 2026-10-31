@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useEscape } from '../hooks/useEscape';
 import { LegalSections } from './LegalSections';
 
 interface LegalNoticeModalProps {
@@ -8,12 +9,7 @@ interface LegalNoticeModalProps {
 
 /** Écran « Mentions légales » accessible en permanence (menu ☰ et Paramètres système). */
 export const LegalNoticeModal: React.FC<LegalNoticeModalProps> = ({ isOpen, onClose }) => {
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, onClose]);
+  useEscape(!!isOpen, onClose);
 
   if (!isOpen) return null;
 
