@@ -1,6 +1,6 @@
 # Référentiel Pédagogique — Équitation Classique
  
-Ce document répertorie la structure des 18 modules d'apprentissage de l'équitation classique dans l'application **ÉquiProgression**.
+Ce document répertorie la structure des 18 modules d'apprentissage de l'équitation classique dans l'application **Equitor**.
  
 | N° | Titre du Module | Thématique Principale | Notions Fondamentales |
 |---|---|---|---|

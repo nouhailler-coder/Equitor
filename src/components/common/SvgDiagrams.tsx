@@ -52,7 +52,7 @@ export const SvgDiagram: React.FC<DiagramProps> = ({ type, className = '' }) => 
             {/* Legend texts */}
             <text x="190" y="32" fill="#ef4444" fontSize="10" fontWeight="bold">Axe Oreille - Épaule - Hanche - Talon</text>
             <text x="210" y="105" fill="#38bdf8" fontSize="9">Ligne coude-main-bouche</text>
-            <text x="10" y="270" fill="#9ca3af" fontSize="9">© ÉquiProgression — Doctrine Classique</text>
+            <text x="10" y="270" fill="#9ca3af" fontSize="9">© Equitor — Doctrine Classique</text>
           </svg>
           <p className="text-[11px] text-stone-400 mt-2 text-center leading-relaxed">
             La ligne d’aplomb rouge montre l’alignement parfait du centre de gravité. Le coude plié assure une ligne directe et souple vers le mors sans casser le poignet.

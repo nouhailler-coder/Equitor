@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="public/logo.svg" alt="Logo ÉquiProgression" width="128" height="128" />
+<img src="public/logo.svg" alt="Logo Equitor" width="128" height="128" />
 
-# ÉquiProgression
+# Equitor
 
 **La plateforme d’apprentissage équestre qui tient dans la poche — comprendre, s’exercer, réviser, préparer et suivre sa progression. 100 % locale, 100 % hors ligne.**
 
@@ -23,7 +23,7 @@
 
 ## 🐎 Présentation
 
-**ÉquiProgression** est une Progressive Web App mobile, entièrement en français, pour **apprendre**, **réviser** et **suivre sa pratique** de l’équitation, à l’écurie comme à la maison. Elle s’appuie sur les principes de l’équitation classique, de la biomécanique équine et de l’échelle de progression du dressage.
+**Equitor** est une Progressive Web App mobile, entièrement en français, pour **apprendre**, **réviser** et **suivre sa pratique** de l’équitation, à l’écurie comme à la maison. Elle s’appuie sur les principes de l’équitation classique, de la biomécanique équine et de l’échelle de progression du dressage.
 
 > [!NOTE]
 > Aucune inscription, aucun serveur : vos chevaux, séances et progrès restent **sur votre appareil**.
@@ -111,6 +111,8 @@ npm test                         # 69 tests unitaires, d’intégration et de co
 npm run test:e2e                 # 12 parcours de bout en bout (Playwright, mobile)
 npm run lint                     # vérification TypeScript
 npm run icons                    # régénérer les icônes PWA depuis public/logo.svg
+npm run landing:build            # landing page de présentation (landing/dist)
+npm run landing:test             # vérifications statiques et navigateur de la landing
 ```
 
 > [!TIP]
@@ -127,11 +129,13 @@ src/
 ├── services/      stockage (IndexedDB + migrations), sauvegarde, progression, révisions, recherche, stats, PDF
 ├── legal/ onboarding/ pwa/ hooks/ types/
 └── tests/         unitaires, intégration, contenus
-scripts/           e2e.mjs (Playwright), check-legal.ts, generate-icons.mjs
+landing/           landing page statique de présentation (projet Cloudflare Pages distinct)
+scripts/           e2e.mjs (Playwright), check-legal.ts, generate-icons.mjs, landing-*.mjs
 ```
 
 ### ☁️ Déploiement Cloudflare Pages
-Build : `npm ci && npm run build` · dossier de sortie : `dist` · aucune variable d’environnement.
+- **Application** : build `npm ci && npm run build` · dossier de sortie `dist` · aucune variable d’environnement.
+- **Landing page** (projet Pages distinct) : build `npm ci && npm run landing:build` · dossier de sortie `landing/dist` · variable facultative `LANDING_URL`. Détails : [`docs/LANDING.md`](docs/LANDING.md).
 
 ## 📂 Documentation
 
@@ -145,6 +149,7 @@ Build : `npm ci && npm run build` · dossier de sortie : `dist` · aucune variab
 | 💾 [`docs/SAUVEGARDE_RESTAURATION.md`](docs/SAUVEGARDE_RESTAURATION.md) | Format, vérifications, fusion, PDF |
 | 🧪 [`docs/TESTS.md`](docs/TESTS.md) | Stratégie et résultats des tests |
 | 🔍 [`docs/AUDIT_INITIAL.md`](docs/AUDIT_INITIAL.md) | Audit de la version 1.2 |
+| 🌿 [`docs/LANDING.md`](docs/LANDING.md) | Landing page : architecture, déploiement, correspondance textes ↔ fonctionnalités |
 | 📘 [`CONTEXT.md`](CONTEXT.md) | Règles du projet et mécanismes clés |
 | 📝 [`CHANGELOG.md`](CHANGELOG.md) | Historique des versions |
 | 📖 [`docs/referentiel-pedagogique.md`](docs/referentiel-pedagogique.md) · ©️ [`docs/droits-auteur.md`](docs/droits-auteur.md) · ⚠️ [`docs/securite-pedagogique.md`](docs/securite-pedagogique.md) | Contenus, droits d’auteur, sécurité |

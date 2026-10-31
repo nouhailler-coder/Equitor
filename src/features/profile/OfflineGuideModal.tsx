@@ -35,7 +35,7 @@ export const OfflineGuideModal: React.FC<OfflineGuideModalProps> = ({ isOpen, on
               <span>🛡️</span> Garantie de confidentialité totale
             </h3>
             <p className="text-xs">
-              ÉquiProgression fonctionne selon une architecture 100% locale : aucun serveur distant, aucune base de données cloud, aucun traceur ou analytics. Vos notes, vos chevaux et vos séances restent stockés exclusivement dans la mémoire interne de votre appareil (IndexedDB).
+              Equitor fonctionne selon une architecture 100% locale : aucun serveur distant, aucune base de données cloud, aucun traceur ou analytics. Vos notes, vos chevaux et vos séances restent stockés exclusivement dans la mémoire interne de votre appareil (IndexedDB).
             </p>
           </div>
 

@@ -45,10 +45,10 @@ const STYLE = `
 
 function printDocument(title: string, bodyHtml: string) {
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${STYLE}</style></head><body>
-  <header><img src="${location.origin}/logo.svg" alt=""><span class="brand">ÉquiProgression</span>
+  <header><img src="${location.origin}/logo.svg" alt=""><span class="brand">Equitor</span>
   <span class="meta">${esc(title)}<br>Édité le ${esc(new Date().toLocaleDateString('fr-FR', { dateStyle: 'long' }))}</span></header>
   ${bodyHtml}
-  <footer>Document généré localement par ÉquiProgression. Contenus fournis à titre informatif : ils ne remplacent pas l’enseignement d’un professionnel qualifié.</footer>
+  <footer>Document généré localement par Equitor. Contenus fournis à titre informatif : ils ne remplacent pas l’enseignement d’un professionnel qualifié.</footer>
   </body></html>`;
   const iframe = document.createElement('iframe');
   iframe.setAttribute('aria-hidden', 'true');

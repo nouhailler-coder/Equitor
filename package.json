@@ -12,7 +12,13 @@
     "check:legal": "tsx scripts/check-legal.ts",
     "icons": "node scripts/generate-icons.mjs",
     "clean": "rm -rf dist",
-    "test:e2e": "npm run build && node scripts/e2e.mjs"
+    "test:e2e": "npm run build && node scripts/e2e.mjs",
+    "landing:dev": "vite --config landing/vite.config.mjs",
+    "landing:build": "vite build --config landing/vite.config.mjs",
+    "landing:preview": "vite preview --config landing/vite.config.mjs",
+    "landing:assets": "node scripts/landing-assets.mjs",
+    "landing:screens": "node scripts/landing-screenshots.mjs",
+    "landing:test": "npm run landing:build && tsx --test landing/tests/*.test.ts && node scripts/landing-e2e.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

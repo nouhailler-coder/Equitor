@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* La landing page (landing/) a ses propres styles : ne pas générer de classes à partir de ses fichiers. */
+@source not "../landing";
+
 /* Mode sombre piloté par la classe `.dark` sur <html> (clair / sombre / automatique). */
 @custom-variant dark (&:where(.dark, .dark *));
 

@@ -46,8 +46,9 @@ export default defineConfig(() => {
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
           id: '/',
-          name: 'ÉquiProgression',
-          short_name: 'ÉquiProgr',
+          name: 'Equitor',
+          lang: 'fr',
+          short_name: 'Equitor',
           description: 'Application PWA 100% locale d’apprentissage, de pratique équestre et de révisions fondée sur les principes de l’équitation classique.',
           theme_color: '#1e3a2f',
           background_color: '#1e3a2f',

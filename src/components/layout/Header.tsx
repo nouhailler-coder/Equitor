@@ -32,11 +32,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMenu, onOpenSearch, onOpen
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#162e24]" />
             )}
           </button>
-          <a href="#/accueil" className="flex items-center gap-2.5" aria-label="ÉquiProgression — accueil">
+          <a href="#/accueil" className="flex items-center gap-2.5" aria-label="Equitor — accueil">
           <img src="/logo.svg" alt="" className="w-8 h-8 rounded-lg shadow" />
           <div>
             <span className="block text-base sm:text-lg font-black tracking-tight leading-none text-white">
-              Équi<span className="text-amber-400">Progression</span>
+              Equi<span className="text-amber-400">tor</span>
             </span>
             <p className="hidden sm:block text-[10px] text-emerald-200/70 font-medium tracking-wide">
               Équitation Classique • 100% Locale

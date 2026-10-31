@@ -1,5 +1,5 @@
 /**
- * Modèles de données d'ÉquiProgression (schéma IndexedDB v2).
+ * Modèles de données d'Equitor (schéma IndexedDB v2).
  * Règles : identifiants stables (chaînes), dates au format ISO 8601, aucune donnée redondante.
  * Description détaillée : docs/SCHEMA_DONNEES.md.
  */

@@ -132,7 +132,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, currentPat
       >
         <div className="h-14 px-4 flex items-center justify-between border-b border-emerald-900/60 shrink-0">
           <span className="font-black tracking-tight">
-            Équi<span className="text-amber-400">Progression</span>
+            Equi<span className="text-amber-400">tor</span>
           </span>
           <button onClick={onClose} className="p-2 rounded-lg text-emerald-200 hover:bg-emerald-900 transition" aria-label="Fermer le menu">
             <X className="w-5 h-5" />

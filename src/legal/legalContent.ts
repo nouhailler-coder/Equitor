@@ -24,7 +24,7 @@ export interface LegalSection {
 }
 
 export const legalPublisher = {
-  appName: 'ÉquiProgression',
+  appName: 'Equitor',
   publisher: 'Swinux',
   address: 'Canton de Vaud, Suisse',
   email: 'contact@swinux.ch',
@@ -72,7 +72,7 @@ const sections: LegalSection[] = [
     id: 'utilisation',
     title: 'Utilisation de l’application',
     paragraphs: [
-      'ÉquiProgression est un outil d’aide à l’apprentissage théorique et au suivi personnel de la pratique équestre. Les fiches, schémas, quiz et checklists sont des supports de réflexion et de révision.',
+      'Equitor est un outil d’aide à l’apprentissage théorique et au suivi personnel de la pratique équestre. Les fiches, schémas, quiz et checklists sont des supports de réflexion et de révision.',
       'L’équitation est une activité comportant des risques inhérents. L’application ne remplace en aucun cas l’enseignement direct d’un moniteur ou instructeur diplômé, ni l’avis d’un vétérinaire, d’un maréchal-ferrant ou de tout autre professionnel des équidés. Les exercices avancés (longe, saut, cross, jeune cheval, mouvements latéraux) ne doivent être pratiqués que sous encadrement qualifié.',
     ],
   },

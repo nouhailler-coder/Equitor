@@ -1,6 +1,6 @@
-# 📘 Guide utilisateur — ÉquiProgression
+# 📘 Guide utilisateur — Equitor
 
-Bienvenue ! ÉquiProgression est votre carnet d'apprentissage équestre. Tout reste **sur votre appareil** et fonctionne **sans connexion**.
+Bienvenue ! Equitor est votre carnet d'apprentissage équestre. Tout reste **sur votre appareil** et fonctionne **sans connexion**.
 
 > ⚠️ L'application aide à comprendre et à préparer. Elle ne remplace ni votre enseignant, ni le vétérinaire, ni les consignes de votre centre équestre.
 

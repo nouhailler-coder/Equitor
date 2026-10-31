@@ -157,7 +157,7 @@ export async function validateBackup(text: string): Promise<ValidationResult> {
     return { ok: false, error: 'Le fichier n’est pas un JSON valide (fichier corrompu ou tronqué).' };
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { ok: false, error: 'Structure non reconnue : ce fichier n’est pas une sauvegarde ÉquiProgression.' };
+    return { ok: false, error: 'Structure non reconnue : ce fichier n’est pas une sauvegarde Equitor.' };
   }
   const p = parsed as Record<string, unknown>;
   const warnings: string[] = [];
@@ -184,7 +184,7 @@ export async function validateBackup(text: string): Promise<ValidationResult> {
     raw = convertV1(p);
     warnings.push('Ancienne sauvegarde (v1) : elle sera convertie au nouveau format.');
   } else {
-    return { ok: false, error: 'Structure non reconnue : ce fichier n’est pas une sauvegarde ÉquiProgression.' };
+    return { ok: false, error: 'Structure non reconnue : ce fichier n’est pas une sauvegarde Equitor.' };
   }
 
   const data = emptyData();

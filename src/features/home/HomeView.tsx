@@ -72,7 +72,7 @@ export const HomeView: React.FC = () => {
     <div className="space-y-5">
       <div className="rounded-3xl bg-gradient-to-br from-brand-900 via-[#1c382c] to-brand-950 p-5 sm:p-6 text-white shadow-xl relative overflow-hidden">
         <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-amber-400/10 pointer-events-none" />
-        <h1 className="text-xl sm:text-2xl font-black tracking-tight">{profile?.firstName ? `Bonjour ${profile.firstName} !` : 'Bienvenue sur ÉquiProgression'}</h1>
+        <h1 className="text-xl sm:text-2xl font-black tracking-tight">{profile?.firstName ? `Bonjour ${profile.firstName} !` : 'Bienvenue sur Equitor'}</h1>
         <p className="text-sm text-emerald-100/80 mt-1 max-w-lg">Comprendre le cheval, apprendre la théorie, préparer vos séances et suivre votre progression — 100 % hors ligne.</p>
         <div className="flex flex-wrap gap-2 mt-4">
           <button className={btn('accent')} onClick={() => navigate(due ? 'reviser/session' : 'reviser')}>

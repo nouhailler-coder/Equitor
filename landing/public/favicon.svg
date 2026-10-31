@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Equitor">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4434"/>
+      <stop offset="1" stop-color="#0f1d17"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fde68a"/>
+      <stop offset="0.55" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="cream" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffbeb"/>
+      <stop offset="1" stop-color="#e7e5e4"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Fer à cheval -->
+  <path d="M161,426 A190,190 0 1 1 351,426" fill="none" stroke="url(#gold)" stroke-width="30" stroke-linecap="round"/>
+  <g fill="#0f1d17">
+    <circle cx="92" cy="357" r="5"/><circle cx="66" cy="262" r="5"/><circle cx="100" cy="153" r="5"/>
+    <circle cx="420" cy="357" r="5"/><circle cx="446" cy="262" r="5"/><circle cx="412" cy="153" r="5"/>
+  </g>
+  <!-- Tête de cheval -->
+  <path d="M262,104 L286,150 C304,166 332,206 362,248 C380,273 396,294 393,312 C390,329 372,335 354,331 C338,327 326,319 312,313 C298,307 290,300 281,298 C269,304 262,324 258,352 L252,412 L164,412 C168,342 184,270 214,206 C228,176 238,152 246,128 Z" fill="url(#cream)"/>
+  <!-- Crinière -->
+  <path d="M246,128 C236,152 226,176 212,206 C182,270 166,342 162,412 L140,412 C140,380 146,350 156,322 L138,326 C150,300 160,280 170,262 L152,262 C168,236 180,214 190,194 L176,192 C196,170 214,150 232,118 Z" fill="url(#gold)"/>
+  <!-- Œil et naseau -->
+  <ellipse cx="300" cy="206" rx="9" ry="7" fill="#162e24"/>
+  <path d="M372,296 C380,294 386,300 384,306" fill="none" stroke="#162e24" stroke-width="6" stroke-linecap="round"/>
+</svg>

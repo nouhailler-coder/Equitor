@@ -1,4 +1,4 @@
-# 🏗️ Architecture — ÉquiProgression 2.0
+# 🏗️ Architecture — Equitor 2.0
 
 ## Principes
 

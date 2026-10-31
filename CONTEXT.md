@@ -1,4 +1,4 @@
-# 📘 CONTEXT — ÉquiProgression
+# 📘 CONTEXT — Equitor
 
 Document de contexte pour toute personne (ou agent) qui reprend le projet : ce qu’est l’application, ses règles, et où se trouvent les mécanismes transverses.
 
@@ -8,6 +8,7 @@ PWA mobile en français d’apprentissage et de suivi de la pratique équestre. 
 
 - **Stack** : React 19, TypeScript, Vite 8, Tailwind CSS 4, Dexie (IndexedDB), `vite-plugin-pwa` (Workbox), icônes `lucide-react`.
 - **Version courante** : voir `package.json` (injectée au build dans `__APP_VERSION__`).
+- **Nom** : l’application s’appelait « ÉquiProgression » avant de devenir **Equitor**. Les identifiants techniques gardent l’ancien nom et **ne doivent pas être renommés**, sous peine de perdre ou de rendre illisibles les données existantes : base IndexedDB `EquiProgressionDB`, format de sauvegarde `equiprogression-backup` (et nom de fichier `equiprogression_sauvegarde_…`), nom du paquet npm, `id` du manifeste (`/`).
 
 ## 📏 Règles du projet
 
@@ -61,6 +62,13 @@ PWA mobile en français d’apprentissage et de suivi de la pratique équestre. 
 - **Fenêtres** : `Modal` du kit (piège de focus, `useEscape` : Échap ne ferme que la fenêtre du dessus).
 - **Prudence pédagogique** : contenus avancés = supports de compréhension ; comportement = jamais d'interprétation catégorique ; matériel = pas de réglage personnalisé ; observations ≠ diagnostic vétérinaire.
 
+## 🌿 Landing page
+
+- Site statique indépendant dans `landing/` (projet Cloudflare Pages distinct, sans service worker ni manifeste). Voir `docs/LANDING.md`.
+- **Elle ne cite que des fonctionnalités vérifiées** : si une fonction de l'application change, mettre à jour `landing/index.html` et le tableau de correspondance de `docs/LANDING.md`.
+- Captures authentiques : `npm run landing:screens`. Vérifications : `npm run landing:test`.
+- `src/index.css` exclut `landing/` du scan Tailwind (`@source not`) : ne pas retirer cette ligne.
+
 ## 🧪 Tester le premier lancement
 
 - **En développement** : Paramètres système → *🛠️ [DEV] Réinitialiser les mentions légales et l’onboarding*.
@@ -73,6 +81,7 @@ npm test          # 69 tests + check:legal
 npm run test:e2e  # 12 parcours de bout en bout
 npm run lint    # TypeScript
 npm run build   # build PWA
+npm run landing:test  # landing page (si elle a changé)
 ```
 
 Puis mettre à jour `CHANGELOG.md` et la version dans `package.json`.

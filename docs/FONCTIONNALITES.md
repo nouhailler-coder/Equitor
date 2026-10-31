@@ -1,4 +1,4 @@
-# ✨ Fonctionnalités — ÉquiProgression 2.0
+# ✨ Fonctionnalités — Equitor 2.0
 
 Chaque fonctionnalité listée ici enregistre réellement ses données et a été testée (voir `TESTS.md`).
 

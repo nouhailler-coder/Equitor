@@ -110,9 +110,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {step === 0 && (
             <div className="text-center space-y-4 py-2">
-              <img src="/logo.svg" alt="Logo ÉquiProgression" className="w-24 h-24 mx-auto rounded-3xl shadow-lg" />
+              <img src="/logo.svg" alt="Logo Equitor" className="w-24 h-24 mx-auto rounded-3xl shadow-lg" />
               <h2 id="onboarding-title" className="text-2xl font-black text-stone-900 tracking-tight">
-                Bienvenue sur Équi<span className="text-amber-600">Progression</span>
+                Bienvenue sur Equi<span className="text-amber-600">tor</span>
               </h2>
               <p className="text-sm text-stone-600 leading-relaxed">
                 Votre carnet d’apprentissage équestre : comprendre les principes de l’équitation
@@ -155,7 +155,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
             <div className="space-y-4">
               <h2 id="onboarding-title" className="text-xl font-black text-stone-900">Installez l’application</h2>
               <p className="text-sm text-stone-600 leading-relaxed">
-                Ajoutez ÉquiProgression à l’écran d’accueil de votre téléphone ou à votre ordinateur :
+                Ajoutez Equitor à l’écran d’accueil de votre téléphone ou à votre ordinateur :
                 elle s’ouvrira d’un geste, en plein écran, et fonctionnera même sans réseau au fond du
                 manège.
               </p>

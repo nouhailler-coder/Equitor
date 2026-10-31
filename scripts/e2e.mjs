@@ -153,7 +153,7 @@ async function main() {
       await page.getByRole('button', { name: 'J’ai compris' }).click();
       await skipGuides();
       await page.reload();
-      await page.locator('main').getByRole('heading', { name: /Bienvenue sur ÉquiProgression|Bonjour/ }).waitFor();
+      await page.locator('main').getByRole('heading', { name: /Bienvenue sur Equitor|Bonjour/ }).waitFor();
       assert((await page.getByRole('button', { name: 'J’ai compris' }).count()) === 0, 'l’avertissement réapparaît');
       const sw = await page.evaluate(async () => !!(await navigator.serviceWorker.getRegistration()));
       assert(sw, 'service worker non enregistré');

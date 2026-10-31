@@ -6,7 +6,7 @@ import { QUIZZES_CATALOG } from '../data/quizzes.ts';
 import { DICTIONARY } from '../data/dictionary.ts';
 import { validateBackup } from '../services/backup/backup.ts';
 
-describe('ÉquiProgression — Tests de validation métier', () => {
+describe('Equitor — Tests de validation métier', () => {
   it('contient exactement les 18 chapitres du référentiel classique', () => {
     assert.strictEqual(CHAPTERS_CATALOG.length, 18, 'Doit contenir 18 chapitres');
     for (let i = 1; i <= 18; i++) {

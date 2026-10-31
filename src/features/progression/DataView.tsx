@@ -69,7 +69,7 @@ export const DataView: React.FC = () => {
     setPreview(null);
     if (!f) return;
     if (f.size > 50 * 1024 * 1024) {
-      setError('Fichier trop volumineux (plus de 50 Mo) : ce n’est probablement pas une sauvegarde ÉquiProgression.');
+      setError('Fichier trop volumineux (plus de 50 Mo) : ce n’est probablement pas une sauvegarde Equitor.');
       return;
     }
     const res = await validateBackup(await f.text());

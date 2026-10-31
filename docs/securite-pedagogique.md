@@ -1,6 +1,6 @@
 # Sécurité Pédagogique et Classification des Risques
 
-L’application **ÉquiProgression** place la sécurité du cavalier et le bien-être physique et psychologique du cheval au premier rang de ses priorités.
+L’application **Equitor** place la sécurité du cavalier et le bien-être physique et psychologique du cheval au premier rang de ses priorités.
 
 ## 1. Principe Directeur : Compréhension vs Entraînement Autonome
 Les fiches techniques et exercices ne doivent **jamais** être interprétés comme un protocole permettant à un cavalier isolé de réaliser seul des manœuvres complexes ou dangereuses.

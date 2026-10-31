@@ -116,7 +116,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({ isOpen, on
             <div>
               <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">Application</div>
               <h2 id="install-guide-title" className="text-lg font-black">
-                Installer ÉquiProgression
+                Installer Equitor
               </h2>
             </div>
           </div>

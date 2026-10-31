@@ -6,6 +6,7 @@
 | `npm run lint` | Vérification TypeScript (`tsc --noEmit`) | ✔ |
 | `npm run build` | Build de production PWA | ✔ |
 | `npm run test:e2e` | Build + 12 parcours Playwright en format mobile (375 × 812) | 12/12 ✔, 0 erreur console |
+| `npm run landing:test` | Build de la landing + `landing/tests/landing.test.ts` + `scripts/landing-e2e.mjs` | 11 ✔ + 11/11 ✔ |
 
 ## Tests unitaires — `src/tests/services.test.ts`, `features.test.ts`, `terms.test.ts`
 
@@ -43,6 +44,11 @@ Identifiants uniques, réponses valides, explications présentes, chaque compét
 12. Mode sombre et absence de débordement horizontal sur 7 écrans
 
 Navigateur : celui de Playwright s'il est installé, sinon `CHROMIUM_PATH` ou un Chromium/Chrome du système. `E2E_SHOTS=<dossier>` enregistre une capture à chaque échec.
+
+## Landing page — `landing/tests/landing.test.ts`, `scripts/landing-e2e.mjs`
+
+- **Statique (build)** : ancres internes, liens externes limités (application, dépôt, contact), icônes du sprite, images présentes avec texte alternatif et dimensions, un seul `h1` et titres sans saut, métadonnées SEO / Open Graph / JSON-LD, aucune ressource externe ni style/script en ligne (CSP), aucun service worker / manifeste / stockage, absence de promesses non vérifiées, en-têtes `_headers`.
+- **Navigateur** : à 320, 375, 768, 1024, 1366 et 1920 px, pas de débordement horizontal, toutes les images chargées (y compris galerie défilante), aucune erreur console, aucune requête hors du site ; menu mobile (ouverture, lien, Échap, retour du focus) ; navigation clavier (lien d'évitement, contour de focus) ; cibles tactiles ≥ 44 px ; `prefers-reduced-motion`.
 
 ## Vérification manuelle effectuée
 

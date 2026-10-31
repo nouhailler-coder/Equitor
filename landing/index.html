@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Equitor — carnet d’apprentissage équestre</title>
+    <meta name="description" content="Equitor est un carnet d’apprentissage équestre pour comprendre les principes de l’équitation classique, préparer ses séances à l’écurie et suivre sa progression. Sans compte, données sur votre appareil." />
+    <meta name="theme-color" content="#162e24" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Equitor" />
+    <meta property="og:title" content="Equitor — apprendre, comprendre et progresser en équitation" />
+    <meta property="og:description" content="Un carnet d’apprentissage équestre pour approfondir les principes de l’équitation classique, préparer vos séances à l’écurie et garder une trace de votre progression." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Logo Equitor et accroche « Apprendre, comprendre et progresser en équitation »" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Equitor",
+        "url": "https://equitor.swinux.ch/",
+        "description": "Carnet d’apprentissage équestre : comprendre les principes de l’équitation classique, préparer ses séances et suivre sa progression.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "fr",
+        "publisher": { "@type": "Organization", "name": "Swinux", "email": "contact@swinux.ch" }
+      }
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+
+    <!-- Icônes (sprite) -->
+    <svg class="sprite" aria-hidden="true" width="0" height="0">
+      <defs>
+        <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 5.5c2.6-1 5.6-1 9 1 3.4-2 6.4-2 9-1V19c-2.6-1-5.6-1-9 1-3.4-2-6.4-2-9-1z" /><path d="M12 6.5V20" /></symbol>
+        <symbol id="i-path" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.2" /><circle cx="18" cy="6" r="2.2" /><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6" /></symbol>
+        <symbol id="i-dictionary" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" /><path d="M5 17a3 3 0 0 1 3-3h11" /><path d="M9 8h6" /></symbol>
+        <symbol id="i-horse" viewBox="0 0 24 24"><path d="M7 20v-8.5a5 5 0 0 1 10 0V20" /><path d="M4.5 20h5M14.5 20h5" /><circle cx="9.4" cy="11" r=".6" /><circle cx="14.6" cy="11" r=".6" /><circle cx="9" cy="15" r=".6" /><circle cx="15" cy="15" r=".6" /></symbol>
+        <symbol id="i-arena" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="1" /><path d="M7 12h10" stroke-dasharray="1.5 1.5" /><path d="M12 5.5c-3 2.5-3 4.5 0 6.5s3 4 0 6.5" /></symbol>
+        <symbol id="i-quiz" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 9.5l1.6 1.6L11.5 8" /><path d="M13.5 9.5H17" /><path d="M7 15h4M13.5 15H17" /></symbol>
+        <symbol id="i-plan" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /><path d="M8 14.5l2 2 4-4" /></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 6.5l1.5 1.5L8.5 5" /><path d="M11 7h9" /><path d="M4 12.5l1.5 1.5 3-3" /><path d="M11 13h9" /><path d="M4.5 18.5h3M11 19h9" /></symbol>
+        <symbol id="i-debrief" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" /><path d="M8 9h8M8 12.5h5" /></symbol>
+        <symbol id="i-journal" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 3v18" /><path d="M12 8h4M12 11.5h4" /></symbol>
+        <symbol id="i-skills" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></symbol>
+        <symbol id="i-cards" viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="13" rx="2" /><path d="M8 4h11a2 2 0 0 1 2 2v11" /><path d="M7 13.5h5" /></symbol>
+        <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16" /><path d="M7.5 15l3.5-4 3 2.5 5-6" /></symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></symbol>
+        <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.8z" /></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4" /><path d="M9 12h6M9 15.5h6" /></symbol>
+        <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4v11" /><path d="M7.5 10.5L12 15l4.5-4.5" /><path d="M4.5 17v3h15v-3" /></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" /></symbol>
+        <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6" /><circle cx="12" cy="16.8" r=".6" /></symbol>
+        <symbol id="i-device" viewBox="0 0 24 24"><rect x="2.5" y="5" width="13" height="10" rx="1.5" /><path d="M6 19h6M9 15v4" /><rect x="17" y="9" width="4.5" height="10" rx="1" /></symbol>
+        <symbol id="i-install" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2" /><path d="M12 7v7" /><path d="M9.2 11.5L12 14.3l2.8-2.8" /><path d="M10.5 18.5h3" /></symbol>
+        <symbol id="i-offline" viewBox="0 0 24 24"><path d="M3 9a13 13 0 0 1 18 0" /><path d="M6.5 12.5a8 8 0 0 1 11 0" /><path d="M10 16a3 3 0 0 1 4 0" /><circle cx="12" cy="19.3" r=".8" /></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /><circle cx="12" cy="15.5" r="1.2" /></symbol>
+        <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 0 1-13.3 4.8" /><path d="M4.5 12a7.5 7.5 0 0 1 13.3-4.8" /><path d="M18 3.5v4h-4M6 20.5v-4h4" /></symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
+        <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></symbol>
+        <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></symbol>
+      </defs>
+    </svg>
+
+    <header class="site-header" id="haut">
+      <div class="container header-inner">
+        <a class="brand" href="#haut" aria-label="Equitor, retour en haut de la page">
+          <img src="/favicon.svg" alt="" width="36" height="36" />
+          <span>Equitor</span>
+        </a>
+        <nav class="main-nav" id="menu-principal" aria-label="Navigation principale">
+          <ul>
+            <li><a href="#apprendre">Apprendre</a></li>
+            <li><a href="#preparer">Préparer</a></li>
+            <li><a href="#progresser">Progresser</a></li>
+            <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+            <li><a href="#apercu">Aperçu</a></li>
+            <li><a href="#acces">Accès</a></li>
+          </ul>
+          <a class="btn btn-gold nav-cta-mobile" href="https://equitor.swinux.ch/">Découvrir Equitor</a>
+        </nav>
+        <a class="btn btn-gold header-cta" href="https://equitor.swinux.ch/">Découvrir Equitor</a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal">
+          <svg class="icon" aria-hidden="true"><use href="#i-menu" /></svg>
+          <span class="visually-hidden">Ouvrir le menu</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="hero-titre">
+        <svg class="hero-arena" viewBox="0 0 400 800" aria-hidden="true" focusable="false">
+          <rect x="40" y="40" width="320" height="720" rx="4" />
+          <path class="hero-arena-mid" d="M200 40v720" />
+          <path class="hero-arena-path" d="M200 40c-150 120-150 200 0 240s150 120 0 240-150 120 0 240" />
+          <g class="hero-arena-letters">
+            <text x="200" y="28">C</text><text x="200" y="792">A</text>
+            <text x="22" y="184">H</text><text x="378" y="184">M</text>
+            <text x="22" y="406">E</text><text x="378" y="406">B</text>
+            <text x="22" y="628">K</text><text x="378" y="628">F</text>
+          </g>
+        </svg>
+        <div class="container hero-inner">
+          <div class="hero-text">
+            <p class="eyebrow">Carnet d’apprentissage équestre</p>
+            <h1 id="hero-titre">Apprendre, comprendre et progresser en équitation.</h1>
+            <p class="lead">
+              Equitor accompagne votre apprentissage : approfondir les principes de l’équitation classique,
+              préparer vos séances à l’écurie et garder une trace de votre progression.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-gold btn-lg" href="https://equitor.swinux.ch/">
+                Ouvrir Equitor
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+              </a>
+              <a class="btn btn-ghost-light btn-lg" href="#fonctionnalites">Découvrir les fonctionnalités</a>
+            </div>
+            <ul class="hero-facts" aria-label="En bref">
+              <li><svg class="icon" aria-hidden="true"><use href="#i-lock" /></svg>Sans compte, données sur votre appareil</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-offline" /></svg>Utilisable hors ligne après la première visite</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-device" /></svg>Téléphone, tablette et ordinateur</li>
+            </ul>
+          </div>
+          <figure class="hero-visual">
+            <div class="phone">
+              <img
+                src="/screens/accueil.webp"
+                width="520"
+                height="1125"
+                fetchpriority="high"
+                alt="Capture de l’écran d’accueil : prochaine étape du parcours, compétences recommandées et accès aux révisions."
+              />
+            </div>
+            <figcaption>Capture réelle de l’écran d’accueil</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Apprendre -->
+      <section class="section section-cream" id="apprendre" aria-labelledby="apprendre-titre">
+        <div class="container split">
+          <div class="split-text">
+            <p class="kicker"><span class="kicker-num">01</span> Apprendre</p>
+            <h2 id="apprendre-titre">Comprendre l’équitation classique, pas seulement l’exécuter</h2>
+            <p>
+              Un exercice prend tout son sens lorsqu’on en comprend l’objectif. Equitor rassemble des fiches
+              originales qui expliquent le <em>pourquoi</em> avant le <em>comment</em> : la logique des aides,
+              l’équilibre du cavalier, la mécanique des allures, la géométrie des figures.
+            </p>
+            <p>
+              Chaque fiche présente ses objectifs pédagogiques, une consigne de sécurité et un résumé ; les termes
+              techniques renvoient directement au dictionnaire.
+            </p>
+            <ul class="topic-list" aria-label="Thèmes abordés dans les fiches">
+              <li>Les aides naturelles et leur accord</li>
+              <li>Tenue des rênes, contact et demi-arrêt</li>
+              <li>Assiette, position et indépendance des aides</li>
+              <li>Allures, transitions et variations d’allure</li>
+              <li>Figures de manège et géométrie des courbes</li>
+              <li>Échelles de progression du dressage</li>
+              <li>Cession à la jambe et épaule en dedans</li>
+              <li>Travail à pied et à la longe</li>
+              <li>Barres au sol et phases du saut</li>
+              <li>Sécurité, échauffement et retour au calme</li>
+            </ul>
+            <p class="note">
+              24 fiches réparties en 18 modules. Les notions avancées sont présentées comme des supports de
+              compréhension, à mettre en pratique avec un enseignant.
+            </p>
+          </div>
+          <div class="split-aside">
+            <div class="stack-cards">
+              <article class="mini-card">
+                <svg class="icon icon-badge" aria-hidden="true"><use href="#i-horse" /></svg>
+                <h3>Connaître le cheval</h3>
+                <p>Un atlas anatomique (5 vues, 40 régions) et 17 signaux de comportement expliqués avec prudence.</p>
+              </article>
+              <article class="mini-card">
+                <svg class="icon icon-badge" aria-hidden="true"><use href="#i-dictionary" /></svg>
+                <h3>Parler le même langage</h3>
+                <p>Un dictionnaire de 108 termes, avec exemples et notions associées.</p>
+              </article>
+              <article class="mini-card">
+                <svg class="icon icon-badge" aria-hidden="true"><use href="#i-arena" /></svg>
+                <h3>Visualiser les figures</h3>
+                <p>Un manège 20 × 40 m interactif : 9 figures au tracé animé, des lettres aux courbes.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Préparer -->
+      <section class="section" id="preparer" aria-labelledby="preparer-titre">
+        <div class="container split split-reverse">
+          <div class="split-text">
+            <p class="kicker"><span class="kicker-num">02</span> Préparer</p>
+            <h2 id="preparer-titre">Arriver à l’écurie avec une intention de travail claire</h2>
+            <p>
+              Avant de monter, prenez quelques minutes pour poser votre objectif. Equitor vous aide à le formuler
+              et à rassembler ce qui vous sera utile, sans rien décider à votre place.
+            </p>
+            <dl class="benefits">
+              <div>
+                <dt><svg class="icon" aria-hidden="true"><use href="#i-plan" /></svg>Un programme de séance</dt>
+                <dd>
+                  Partez d’une page blanche ou de l’un des 8 modèles (avant une séance, comprendre la position,
+                  les transitions, découverte du dressage, de l’obstacle, travail à pied…). Vous y notez l’objectif,
+                  la date, le cheval, les compétences visées, les fiches à relire et les exercices théoriques à réviser.
+                </dd>
+              </div>
+              <div>
+                <dt><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>Des checklists à votre main</dt>
+                <dd>
+                  Avant la séance, préparation du cheval, après la séance : trois listes prêtes à l’emploi que vous
+                  pouvez renommer, compléter, réordonner ou recréer.
+                </dd>
+              </div>
+              <div>
+                <dt><svg class="icon" aria-hidden="true"><use href="#i-debrief" /></svg>Un bilan après le travail</dt>
+                <dd>
+                  Objectifs atteints, difficultés, questions à poser à votre enseignant, notions à revoir et
+                  prochain objectif : le bilan est relié à votre journal.
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <figure class="split-aside screen-figure">
+            <div class="phone phone-tilt">
+              <img
+                src="/screens/preparation.webp"
+                width="520"
+                height="1125"
+                loading="lazy"
+                decoding="async"
+                alt="Capture du formulaire « Nouveau programme » rempli à partir du modèle « Préparation avant une séance »."
+              />
+            </div>
+            <figcaption>Un programme créé à partir d’un modèle</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Progresser -->
+      <section class="section section-forest" id="progresser" aria-labelledby="progresser-titre">
+        <div class="container">
+          <div class="section-head">
+            <p class="kicker"><span class="kicker-num">03</span> Progresser</p>
+            <h2 id="progresser-titre">La progression équestre se construit séance après séance</h2>
+            <p>
+              Garder une trace, c’est se donner les moyens de prendre du recul. Equitor conserve votre travail
+              et vous montre où vous en êtes, à partir de ce que vous avez réellement fait.
+            </p>
+          </div>
+          <div class="progress-grid">
+            <article class="dark-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-journal" /></svg>
+              <h3>Un journal de séances</h3>
+              <p>
+                Date, durée, type de travail, cheval, objectifs, points positifs et à améliorer, ressenti,
+                observations. Recherche et filtres pour retrouver une séance.
+              </p>
+            </article>
+            <article class="dark-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-horse" /></svg>
+              <h3>Les fiches de vos chevaux</h3>
+              <p>Photo, robe, particularités et notes, avec l’historique des séances partagées avec chacun.</p>
+            </article>
+            <article class="dark-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-skills" /></svg>
+              <h3>Des compétences suivies</h3>
+              <p>
+                47 compétences dans 13 domaines. Leur maîtrise se mesure à vos résultats aux exercices, jamais à
+                la simple lecture d’une fiche.
+              </p>
+            </article>
+            <article class="dark-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-cards" /></svg>
+              <h3>Des révisions espacées</h3>
+              <p>Chaque notion revient au bon moment (1, 3, 7, 14 puis 30 jours), en fonction de vos réponses.</p>
+            </article>
+            <article class="dark-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-chart" /></svg>
+              <h3>Un tableau de bord honnête</h3>
+              <p>
+                Régularité, taux de réussite, maîtrise par domaine, objectifs hebdomadaires. Sans activité, tout
+                reste à zéro : aucun chiffre n’est inventé.
+              </p>
+            </article>
+            <article class="dark-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-path" /></svg>
+              <h3>Un point de départ</h3>
+              <p>Un diagnostic facultatif de 26 questions propose un parcours, puis vous compare à vos débuts.</p>
+            </article>
+          </div>
+          <p class="section-foot">
+            Ces indicateurs reflètent vos réponses et votre journal : ils vous aident à réfléchir à votre pratique,
+            sans valeur d’évaluation officielle ni promesse de résultat.
+          </p>
+        </div>
+      </section>
+
+      <!-- Fonctionnalités -->
+      <section class="section section-cream" id="fonctionnalites" aria-labelledby="fonctionnalites-titre">
+        <div class="container">
+          <div class="section-head">
+            <p class="kicker">En un coup d’œil</p>
+            <h2 id="fonctionnalites-titre">Les fonctionnalités d’Equitor</h2>
+          </div>
+          <div class="axes">
+            <section class="axis" aria-labelledby="axe-apprendre">
+              <h3 id="axe-apprendre"><span>1</span> Apprendre</h3>
+              <ul class="feature-list">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-book" /></svg>
+                  <div><strong>Fiches et parcours</strong><span>Lire dans l’ordre qui vous convient, ou suivre les compétences recommandées.</span></div>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-quiz" /></svg>
+                  <div><strong>Exercices interactifs</strong><span>10 types de questions, corrigées et expliquées, pour vérifier votre compréhension.</span></div>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-dictionary" /></svg>
+                  <div><strong>Ressources</strong><span>Dictionnaire, atlas, atelier du matériel, manège, comportement : à consulter au besoin.</span></div>
+                </li>
+              </ul>
+            </section>
+            <section class="axis" aria-labelledby="axe-preparer">
+              <h3 id="axe-preparer"><span>2</span> Préparer</h3>
+              <ul class="feature-list">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-plan" /></svg>
+                  <div><strong>Programmes de séance</strong><span>Un objectif clair et les bonnes fiches sous la main avant de monter.</span></div>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>
+                  <div><strong>Checklists</strong><span>Ne rien oublier à l’écurie, avec des listes que vous adaptez.</span></div>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-debrief" /></svg>
+                  <div><strong>Bilan de séance</strong><span>Transformer chaque séance en questions et en prochain objectif.</span></div>
+                </li>
+              </ul>
+            </section>
+            <section class="axis" aria-labelledby="axe-progresser">
+              <h3 id="axe-progresser"><span>3</span> Progresser</h3>
+              <ul class="feature-list">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-journal" /></svg>
+                  <div><strong>Journal et chevaux</strong><span>Retrouver ce que vous avez travaillé, et avec quel cheval.</span></div>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-cards" /></svg>
+                  <div><strong>Révisions et cartes mémoire</strong><span>42 cartes et des rappels espacés pour ancrer les notions.</span></div>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg>
+                  <div><strong>Progression mesurée</strong><span>Voir vos acquis et vos points fragiles, domaine par domaine.</span></div>
+                </li>
+              </ul>
+            </section>
+          </div>
+          <ul class="utility-row" aria-label="Fonctions transversales">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-search" /></svg>Recherche globale tolérante aux fautes</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-star" /></svg>Favoris et notes personnelles</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-file" /></svg>Exports PDF (fiche, programme, journal, bilan)</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-save" /></svg>Sauvegarde et restauration de vos données</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-moon" /></svg>Mode sombre</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-help" /></svg>Aide contextuelle sur chaque écran</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Aperçu -->
+      <section class="section" id="apercu" aria-labelledby="apercu-titre">
+        <div class="container">
+          <div class="section-head">
+            <p class="kicker">Aperçu</p>
+            <h2 id="apercu-titre">Equitor en images</h2>
+            <p>
+              Captures réelles de l’application, version 2.0, prises sur téléphone.
+            </p>
+          </div>
+          <ul class="gallery" aria-label="Captures d’écran de l’application">
+            <li>
+              <figure>
+                <div class="phone"><img src="/screens/fiche.webp" width="520" height="1125" loading="lazy" decoding="async" alt="Fiche « Principes des aides naturelles » : niveau, consigne de sécurité, résumé et objectifs pédagogiques." /></div>
+                <figcaption>Une fiche pédagogique</figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure>
+                <div class="phone"><img src="/screens/manege.webp" width="520" height="1125" loading="lazy" decoding="async" alt="Manège interactif : carrière vue du dessus avec ses lettres et le tracé d’une demi-volte." /></div>
+                <figcaption>Le manège interactif</figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure>
+                <div class="phone"><img src="/screens/journal.webp" width="520" height="1125" loading="lazy" decoding="async" alt="Formulaire « Nouvelle séance » du journal : date, durée, type de séance, discipline, cheval et objectifs." /></div>
+                <figcaption>Une nouvelle séance au journal</figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure>
+                <div class="phone"><img src="/screens/progression.webp" width="520" height="1125" loading="lazy" decoding="async" alt="Écran « Ma progression » : profil, diagnostic, compétences, données et premières statistiques." /></div>
+                <figcaption>Ma progression</figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure>
+                <div class="phone"><img src="/screens/dictionnaire.webp" width="520" height="1125" loading="lazy" decoding="async" alt="Dictionnaire équestre : recherche, filtres par catégorie et par niveau, liste des termes." /></div>
+                <figcaption>Le dictionnaire</figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure>
+                <div class="phone"><img src="/screens/revision.webp" width="520" height="1125" loading="lazy" decoding="async" alt="Écran « Réviser » : révisions du jour, notions à découvrir et cartes mémoire." /></div>
+                <figcaption>Les révisions</figcaption>
+              </figure>
+            </li>
+          </ul>
+          <figure class="desktop-shot">
+            <div class="browser">
+              <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+              <img src="/screens/accueil-ordinateur.webp" width="1280" height="800" loading="lazy" decoding="async" alt="L’écran d’accueil sur ordinateur, avec la navigation latérale." />
+            </div>
+            <figcaption>Sur ordinateur, la navigation passe dans une barre latérale.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Pour qui -->
+      <section class="section section-cream" id="pour-qui" aria-labelledby="pour-qui-titre">
+        <div class="container split">
+          <div class="split-text">
+            <p class="kicker">Pour quel cavalier ?</p>
+            <h2 id="pour-qui-titre">Pour celles et ceux qui veulent comprendre ce qu’ils font à cheval</h2>
+            <p>
+              Equitor s’adresse aux cavaliers amateurs, du débutant au cavalier confirmé, qui souhaitent donner
+              de la méthode à leur apprentissage.
+            </p>
+          </div>
+          <ul class="profiles split-aside">
+            <li>Vous voulez approfondir les principes de l’équitation classique et leur logique.</li>
+            <li>Vous souhaitez structurer votre apprentissage plutôt que l’accumuler.</li>
+            <li>Vous aimez préparer vos séances avec un objectif précis.</li>
+            <li>Vous voulez garder une trace de votre travail et de vos chevaux.</li>
+            <li>Vous cherchez à prendre du recul sur votre pratique à l’écurie.</li>
+          </ul>
+        </div>
+        <div class="container">
+          <p class="callout">
+            <strong>Un compagnon, pas un enseignant.</strong> Equitor est un support d’apprentissage personnel :
+            il ne remplace pas l’accompagnement d’un enseignant qualifié et ne propose pas d’outils de gestion
+            d’écurie ou de suivi d’élèves.
+          </p>
+        </div>
+      </section>
+
+      <!-- Accès -->
+      <section class="section" id="acces" aria-labelledby="acces-titre">
+        <div class="container">
+          <div class="section-head">
+            <p class="kicker">Au quotidien</p>
+            <h2 id="acces-titre">Accessible dans votre quotidien</h2>
+            <p>Equitor s’ouvre dans un navigateur, sans téléchargement depuis une boutique d’applications.</p>
+          </div>
+          <div class="access-grid">
+            <article class="access-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-device" /></svg>
+              <h3>Sur tous vos écrans</h3>
+              <p>Pensé d’abord pour le téléphone, à l’écurie ; confortable aussi sur tablette et ordinateur.</p>
+            </article>
+            <article class="access-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-offline" /></svg>
+              <h3>Hors ligne</h3>
+              <p>Après une première visite, l’application fonctionne sans réseau, même au fond du manège.</p>
+            </article>
+            <article class="access-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-lock" /></svg>
+              <h3>Vos données chez vous</h3>
+              <p>
+                Ni compte ni serveur : vos séances, chevaux et progrès sont enregistrés uniquement dans le
+                navigateur de votre appareil.
+              </p>
+            </article>
+            <article class="access-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-save" /></svg>
+              <h3>Sauvegarde à votre initiative</h3>
+              <p>
+                Il n’y a pas de synchronisation : exportez régulièrement une sauvegarde (fichier JSON) et
+                importez-la pour changer d’appareil.
+              </p>
+            </article>
+            <article class="access-card">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-refresh" /></svg>
+              <h3>Mises à jour discrètes</h3>
+              <p>Les nouvelles versions s’installent en arrière-plan, sans interrompre une saisie.</p>
+            </article>
+          </div>
+
+          <div class="install" aria-labelledby="install-titre">
+            <div class="install-head">
+              <svg class="icon icon-badge" aria-hidden="true"><use href="#i-install" /></svg>
+              <h3 id="install-titre">Installer Equitor sur votre appareil</h3>
+            </div>
+            <ol class="install-steps">
+              <li><strong>Android (Chrome)</strong> : ouvrez Equitor, puis menu ⋮ → <em>Installer l’application</em>.</li>
+              <li><strong>iPhone et iPad (Safari)</strong> : bouton Partager → <em>Sur l’écran d’accueil</em>.</li>
+              <li><strong>Ordinateur (Chrome, Edge)</strong> : icône d’installation dans la barre d’adresse.</li>
+            </ol>
+            <p class="note">L’application propose aussi un bouton « Installer » et un guide pas à pas.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Appel final -->
+      <section class="final-cta" aria-labelledby="final-titre">
+        <div class="container final-inner">
+          <img src="/favicon.svg" alt="" width="72" height="72" loading="lazy" />
+          <h2 id="final-titre">Faites de chaque séance une occasion d’apprendre.</h2>
+          <p>
+            Comprenez les principes de l’équitation classique, préparez votre travail et construisez votre
+            progression avec Equitor.
+          </p>
+          <a class="btn btn-gold btn-lg" href="https://equitor.swinux.ch/">
+            Découvrir Equitor
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <p class="footer-brand"><img src="/favicon.svg" alt="" width="28" height="28" loading="lazy" /> Equitor</p>
+          <p>
+            Carnet d’apprentissage équestre : comprendre l’équitation classique, préparer ses séances et suivre
+            sa progression.
+          </p>
+        </div>
+        <nav aria-label="Liens du pied de page">
+          <h2 class="footer-title">Liens</h2>
+          <ul>
+            <li><a href="https://equitor.swinux.ch/">Ouvrir l’application</a></li>
+            <li><a href="https://github.com/nouhailler-coder/Equitor">Code source sur GitHub</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h2 class="footer-title">Éditeur</h2>
+          <p>
+            Swinux — Canton de Vaud, Suisse<br />
+            <a href="mailto:contact@swinux.ch">contact@swinux.ch</a><br />
+            Hébergement : Cloudflare
+          </p>
+        </div>
+        <div>
+          <h2 class="footer-title">Informations</h2>
+          <p>
+            Les mentions légales complètes sont consultables dans l’application (menu ☰ → Mentions légales).
+          </p>
+          <p>Cette page ne dépose aucun cookie, n’intègre aucun outil de suivi et ne charge aucune ressource externe.</p>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <p>
+          Equitor est un support d’apprentissage fourni à titre informatif : il ne remplace pas l’enseignement
+          d’un professionnel qualifié.
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

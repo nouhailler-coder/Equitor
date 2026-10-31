@@ -1,7 +1,17 @@
 # 📝 Changelog
 
-Toutes les évolutions notables d’ÉquiProgression sont consignées ici.
+Toutes les évolutions notables d’Equitor sont consignées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
+
+## [Non publié]
+
+### ✨ Ajouté
+- 🌿 **Landing page Equitor** (`landing/`) : site statique de présentation, indépendant de l'application et destiné à un projet Cloudflare Pages distinct. Sections Apprendre, Préparer, Progresser, fonctionnalités, captures réelles, public visé, accès au quotidien et installation. Aucune ressource externe, aucun cookie, CSP stricte. Documentation : `docs/LANDING.md`.
+- Scripts `landing:dev`, `landing:build`, `landing:preview`, `landing:test` (11 vérifications statiques + 11 vérifications navigateur de 320 à 1920 px), `landing:screens` (captures authentiques de l'application), `landing:assets` (icônes et image de partage).
+
+### 🔧 Modifié
+- 🏷️ **L'application s'appelle désormais Equitor** (anciennement « ÉquiProgression ») : titre, manifeste PWA (`name`, `short_name`, `lang: 'fr'`), en-tête, accueil, onboarding, mentions légales, impression, logos et documentation. Rien ne change pour les données : base IndexedDB `EquiProgressionDB`, clés `localStorage`, format de sauvegarde `equiprogression-backup` et `id` du manifeste (`/`) sont conservés, les sauvegardes existantes restent importables et l'application installée est mise à jour sur place.
+- `src/index.css` : `@source not "../landing"` pour que Tailwind ignore les fichiers de la landing (CSS de l'application inchangé).
 
 ## [2.0.0] — 2026-10-31
 
